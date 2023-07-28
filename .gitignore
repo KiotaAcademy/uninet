@@ -1,0 +1,7 @@
+/accounts/migrations/
+/accounts/__pycache__/
+
+/base/__pycache__/
+/base/.env
+
+/db.sqlite3
