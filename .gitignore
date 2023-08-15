@@ -5,3 +5,12 @@
 /base/.env
 
 /db.sqlite3
+
+/random.md
+
+/notes/migrations/
+/notes/__pycache__/
+/notes/documents/
+
+
+/students/

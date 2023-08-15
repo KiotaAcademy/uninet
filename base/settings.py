@@ -67,6 +67,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken', # App added by signmeup
 
     'rest_framework', # App added by signmeup
+
+    'notes',
 ]
 
 MIDDLEWARE = [
