@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.conf import settings
+from django.urls import reverse
 
 from rest_framework.exceptions import ValidationError
 
@@ -41,8 +43,17 @@ def set_default_document_title(sender, instance, *args, **kwargs):
         instance.title = filename.split('.')[0]  # Use the filename without extension
 
     # Check if a document with the same title already exists
-    if Document.objects.filter(title=instance.title).exclude(pk=instance.pk).exists():
-        raise ValidationError({'title': 'A document with this title already exists.'})
+    existing_document = Document.objects.filter(title=instance.title).exclude(pk=instance.pk).first()
+    if existing_document:
+        
+        if existing_document.uploaded_by == instance.uploaded_by:
+            raise ValidationError({'title': 'You have already uploaded a document with the same title.',
+                                   })
+        else:
+            raise ValidationError({
+                'title': f"A document with the same title was uploaded by {existing_document.uploaded_by.username}.",
+            })
+
 
 
 class Topic(models.Model):

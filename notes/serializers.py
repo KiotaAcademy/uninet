@@ -9,9 +9,11 @@ class CategorySerializer(serializers.ModelSerializer):
 class DocumentSerializer(serializers.ModelSerializer):
     document = serializers.FileField(required=True)
     categories = CategorySerializer(many=True, read_only=True)  # Use CategorySerializer for ManyToMany field
+    
     class Meta:
         model = Document
         fields = '__all__'
+    
 
 class TopicSerializer(serializers.ModelSerializer):
     notes = DocumentSerializer(many=True, read_only=True)
