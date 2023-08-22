@@ -45,13 +45,14 @@ def set_default_document_title(sender, instance, *args, **kwargs):
     # Check if a document with the same title already exists
     existing_document = Document.objects.filter(title=instance.title).exclude(pk=instance.pk).first()
     if existing_document:
-        
         if existing_document.uploaded_by == instance.uploaded_by:
             raise ValidationError({'title': 'You have already uploaded a document with the same title.',
+                                   'existing_document_title': existing_document.title,
                                    })
         else:
             raise ValidationError({
                 'title': f"A document with the same title was uploaded by {existing_document.uploaded_by.username}.",
+                'existing_document_title': existing_document.title,
             })
 
 
