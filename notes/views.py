@@ -134,7 +134,46 @@ class DocumentViewSet(viewsets.ModelViewSet):
             categories.append(category)
                 
         serializer.save(uploaded_by=self.request.user, categories=categories)
-      
+
+    def delete(self, request, *args, **kwargs):
+        """
+        Delete a document instance.
+
+        This method handles the deletion of a document instance. It checks whether the user making the request is the same
+        user who uploaded the document. If not, it returns a response with a forbidden error. Otherwise, it calls the
+        perform_delete method for custom deletion logic.
+
+        Args:
+            request: The HTTP request.
+            *args: Additional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Response: The response indicating success or error.
+        """
+        instance = self.get_object()
+        if instance.uploaded_by == request.user:
+            return self.perform_delete(instance)
+        else:
+            return Response(
+                {"error": "You do not have permission to delete this document."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+    def perform_delete(self, instance):
+        """
+        Perform the deletion of a document instance.
+
+        This method is responsible for performing the actual deletion of the document instance.
+
+        Args:
+            instance: The document instance to be deleted.
+
+        Returns:
+            Response: The response indicating success or error.
+        """
+        instance.delete()
+        return Response({"message": "Document deleted successfully."}, status=status.HTTP_204_NO_CONTENT)  
 
     @action(detail=True, methods=['get'])
     def download_document_by_id(self, request, pk=None):
