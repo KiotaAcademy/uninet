@@ -7,7 +7,7 @@ from rest_framework.exceptions import ValidationError
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django.http import Http404
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django.urls import reverse
 from django.conf import settings
 
@@ -74,11 +74,10 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """
-        Create a new document instance.
-
-        This method handles the creation of a new document instance. 
+        Create a new document instance. 
         It calls the perform_create method for custom creation logic.
-        ir handles validation errors resulting during document upload
+
+        It handles validation errors resulting during document upload
         This validation error is raised by the presave signal which sets default title based on the filename if no title is provided.
 
         Args:
@@ -112,6 +111,8 @@ class DocumentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """
         Perform the creation of a document instance.
+
+        This method is called by the create method. 
 
         This method is responsible for creating a new document instance, associating categories, and setting the
         uploaded user.
@@ -251,12 +252,106 @@ class DocumentViewSet(viewsets.ModelViewSet):
         return Response(document_urls)
 
     
-    
 
 class TopicViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for managing topics.
+
+    Provides CRUD operations for topics, along with additional actions like updating and deleting topics.
+    """
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
 
+    def get_serializer_context(self):
+        """
+        Return the serializer context with the current request.
+        """
+        return {'request': self.request}
+    
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Retrieve a topic by its ID or name.
+
+        Args:
+            request: The HTTP request.
+            *args: Additional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Response: The response containing the retrieved topic data.
+            
+        Raises:
+            Http404: If the topic is not found.
+        """
+        lookup_field = self.lookup_field
+        lookup_value = self.kwargs[lookup_field]
+
+        try:
+            # Check if the lookup value is numeric (likely an ID)
+            int(lookup_value)
+            topic = self.get_object()
+        except ValueError:
+            # If it's not numeric, consider it a topic name
+            topics = Topic.objects.filter(name=lookup_value)
+            if not topics.exists():
+                raise Http404("Topic not found.")
+            topic = topics
+
+        serializer = self.get_serializer(topic, many=isinstance(topic, QuerySet))
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['put'])
+    def update_topic(self, request):
+        """
+        Update a topic.
+
+        Args:
+            request: The HTTP request.
+
+        Returns:
+            Response: The response containing the updated topic data or error details.
+        """
+        # Parse query parameters to get topic name and document title
+        topic_name = request.query_params.get('topic_name', '')
+        document_title = request.query_params.get('document_title', '')
+
+        # Query the database to find the topic
+        try:
+            topic = Topic.objects.get(name__iexact=topic_name, document__title__iexact=document_title)
+        except Topic.DoesNotExist:
+            return Response({'error': 'Topic not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update the topic instance with JSON data from the request
+        serializer = TopicSerializer(topic, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=False, methods=['delete'])
+    def delete_topic(self, request):
+        """
+        Delete a topic.
+
+        Args:
+            request: The HTTP request.
+
+        Returns:
+            Response: The response indicating success or error.
+        """
+        # Parse query parameters to get topic name and document title
+        topic_name = request.query_params.get('topic_name', '')
+        document_title = request.query_params.get('document_title', '')
+
+        # Query the database to find the topic
+        try:
+            topic = Topic.objects.get(name__iexact=topic_name, document__title__iexact=document_title)
+        except Topic.DoesNotExist:
+            return Response({'error': 'Topic not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Delete the topic instance
+        topic.delete()
+        return Response({'message': 'Topic deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 
 class LectureViewSet(viewsets.ModelViewSet):

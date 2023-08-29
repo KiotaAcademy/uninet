@@ -34,7 +34,7 @@ class Document(models.Model):
     def __str__(self):
         return self.title
 
-# Signal to set default title for Note based on the filename
+# Signal to set default title for document based on the filename
 @receiver(pre_save, sender=Document)
 def set_default_document_title(sender, instance, *args, **kwargs):
     if not instance.title:
@@ -64,7 +64,7 @@ class Topic(models.Model):
     name = models.CharField(max_length=200)
     start_page = models.PositiveIntegerField(blank=True)
     end_page = models.PositiveIntegerField(blank=True)
-    notes = models.ManyToManyField(Document)
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

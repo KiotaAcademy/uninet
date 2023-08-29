@@ -19,4 +19,6 @@ urlpatterns = [
 
     path('documents/<int:pk>/download_document_by_id/', DocumentViewSet.as_view({'get': 'download_document_by_id'}), name='download-document-by-id'),
     path('documents/<str:title>/download_document_by_title/', DocumentViewSet.as_view({'get': 'download_document_by_title'}), name='download-document-by-title'),
+
+
     ]
