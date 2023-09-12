@@ -29,7 +29,7 @@ class Document(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  # User who uploaded the notes
     author = models.CharField(max_length=200, blank=True)  # Author name (optional)
-    categories = models.ManyToManyField(Category)  
+    categories = models.ManyToManyField(Category, blank=True)  
 
     def __str__(self):
         return self.title

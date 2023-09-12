@@ -1,3 +1,6 @@
+import requests
+
+
 from rest_framework import viewsets, status, authentication, permissions, serializers, mixins, response
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -261,12 +264,109 @@ class TopicViewSet(viewsets.ModelViewSet):
     """
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_serializer_context(self):
         """
         Return the serializer context with the current request.
         """
         return {'request': self.request}
+    
+    @action(detail=False, methods=['post'])
+    def create_topic(self, request):
+        """
+        Create a new topic along with an optional document.
+        If a document file is not present in the request, a document_title for an existing document should be provided.
+        
+        Args:
+            request: The HTTP request object.
+
+        Returns:
+            Response: The HTTP response object.
+        """
+        # Create topic data
+        topic_data = {
+            'name': request.data.get('name'),  # Assuming 'name' is a required field for topics
+            'start_page': request.data.get('start_page', None),
+            'end_page': request.data.get('end_page', None),
+        }
+
+        if 'uploaded_document' in request.data:
+            # Prepare the data for document creation
+            document_data = {
+                'document': request.data['uploaded_document']
+            }
+
+            # Call the create_document method to upload the document
+            document = self.create_document(request, document_data)
+            # Check if the document was created successfully
+            if document:
+                topic_data['document'] = document.id
+            else:
+                # If there was an error during document creation, return an error response
+                return Response({'error': 'Document creation failed.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        elif 'uploaded_document' not in request.data and 'document_title' not in request.data:
+            return Response({'error': 'A document or title for an existing document has to be provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        else:
+            document_title = request.data.get('document_title', None)
+            if document_title:
+                existing_document = Document.objects.filter(title=document_title).first()
+                if existing_document:
+                    topic_data['document'] = existing_document.id
+                else:
+                    return Response({'not found': 'Document with this title does not exist'}, status=status.HTTP_404_NOT_FOUND)
+
+        existing_topic = Topic.objects.filter(name=topic_data['name'], document=topic_data['document']).first()
+        if existing_topic:
+            raise ValidationError({'name': 'A topic with the same name already exists for the provided document.'})
+        # Create the topic
+        serializer = TopicSerializer(data=topic_data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+    def create_document(self, request, document_data):
+        """
+        Create a new document or retrieve an existing document based on the provided data.
+
+        Args:
+            request: The HTTP request object.
+            document_data: Data for creating the document.
+
+        Returns:
+            Document or None: The created or existing Document object, or None if creation fails.
+        """
+        # Check if a document title is provided in the request
+        document_title = request.data.get('document_title', None)
+        if document_title:
+            existing_document = Document.objects.filter(title=document_title).first()
+            if existing_document:
+                return existing_document  # Return the existing document
+            else:
+                document_data['title'] = document_title
+        
+        try:
+            # Create an instance of the DocumentSerializer and call save to create the document
+            serializer = DocumentSerializer(data=document_data, context={'request': request})
+            if serializer.is_valid():
+                serializer.save()
+                return serializer.instance
+            
+        except Exception as e:
+            # Check if existing_document_title is in the error and use it to search the database for that document
+            if 'existing_document_title' in str(e):
+                existing_document_title = e.detail['existing_document_title']
+                existing_document = Document.objects.filter(title=existing_document_title).first()
+                if existing_document:
+                    return existing_document  
+            return None 
+
+    
     
     def retrieve(self, request, *args, **kwargs):
         """
