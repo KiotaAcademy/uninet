@@ -2,8 +2,11 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from django.urls import reverse
+from django.contrib.auth import get_user_model
 
 from .models import Category, Document, Topic, Lecture
+
+User = get_user_model()
 
 class CategorySerializer(serializers.ModelSerializer):
     """
@@ -62,13 +65,28 @@ class TopicSerializer(serializers.ModelSerializer):
 
     
 
-    
-    
 
 class LectureSerializer(serializers.ModelSerializer):
-    topics = TopicSerializer(many=True, read_only=True)
-    students = serializers.StringRelatedField(many=True)
-    
+
     class Meta:
         model = Lecture
         fields = '__all__'
+     # Create a custom field for displaying topic data when retrieving lectures
+    topics_info = TopicSerializer(many=True, read_only=True, source='topics')
+
+    # Use SlugRelatedField for serialization (display student usernames)
+    students_usernames = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='username',
+        source='students'
+    )
+    
+    
+    lecturer_username = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='username',
+        source='lecturer'
+    )
+    

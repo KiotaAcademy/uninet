@@ -3,7 +3,7 @@ import requests
 
 from rest_framework import viewsets, status, authentication, permissions, serializers, mixins, response
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, parser_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError
 
@@ -457,3 +457,22 @@ class TopicViewSet(viewsets.ModelViewSet):
 class LectureViewSet(viewsets.ModelViewSet):
     queryset = Lecture.objects.all()
     serializer_class = LectureSerializer
+
+    @action(detail=False, methods=['post'])
+    def create_lecture(self, request):
+        """
+        Create a new lecture.
+
+        Args:
+            request: The HTTP request object.
+
+        Returns:
+            Response: The response containing the created lecture data or error details.
+        """
+        serializer = LectureSerializer(data=request.data, context={'request': request})
+    
+        if serializer.is_valid():
+            # Save the lecture without validating students for now
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)    
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
