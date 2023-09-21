@@ -1,0 +1,16 @@
+/accounts/migrations/
+/accounts/__pycache__/
+
+/base/__pycache__/
+/base/.env
+
+/db.sqlite3
+
+/random.md
+
+/notes/migrations/
+/notes/__pycache__/
+/notes/documents/
+
+
+/students/
