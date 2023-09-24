@@ -476,3 +476,45 @@ class LectureViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)    
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    @action(detail=False, methods=['put'])
+    def update_lecture(self, request):
+        # Extract the lecture ID from the request data or query parameters
+        lecture_id = request.data.get('id') or request.query_params.get('id')
+        if not lecture_id:
+            return Response({'error': 'Lecture ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # Get the lecture instance to be updated
+            lecture = Lecture.objects.get(pk=lecture_id)
+        except Lecture.DoesNotExist:
+            return Response({'error': 'Lecture not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Create a serializer instance for the lecture and update it with the request data
+        serializer = LectureSerializer(lecture, data=request.data, partial=True, context={'request': request})
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    
+    @action(detail=False, methods=['delete'])
+    def delete_lecture(self, request):
+        # Extract the lecture ID from the request data or query parameters
+        lecture_id = request.data.get('id') or request.query_params.get('id')
+        if not lecture_id:
+            return Response({'error': 'Lecture ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # Get the lecture instance to be deleted
+            lecture = Lecture.objects.get(pk=lecture_id)
+        except Lecture.DoesNotExist:
+            return Response({'error': 'Lecture not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Delete the lecture instance
+        lecture.delete()
+        return Response({'message': 'Lecture deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
