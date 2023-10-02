@@ -162,27 +162,40 @@ The following API endpoints are available:
 - **Get All Topics**: Retrieve a list of all topics.
   - Method: GET
   - URL: `http://localhost:8000/notes/topics/`
+  - Note: Authentication details are required in the header.
+      - Key: Authorization
+      - Value: Token <your_auth_token>
 
 - **Get Topic by ID**: Retrieve a topic by its ID.
   - Method: GET
   - URL: `http://localhost:8000/notes/topics/<topic_id>/`
+  - Note: Authentication details are required in the header.
+      - Key: Authorization
+      - Value: Token <your_auth_token>
 
 - **Get Topics by Name**: Retrieve topics by name.
   - Method: GET
   - URL: `http://localhost:8000/notes/topics/<topic_name>/`
+  - Note: Authentication details are required in the header.
+      - Key: Authorization
+      - Value: Token <your_auth_token>
 
 - **Update Topic**: Update a topic by providing parameters in the query.
   - Method: PUT
   - URL: `http://localhost:8000/notes/topics/update_topic/?topic_name=<topic_name>&document_title=<document_title>`
   - Request Data Example (Form Data): Fields to be updated.
     - Note: Parameters are provided in the query.
-    
+  - Note: Authentication details are required in the header.
+      - Key: Authorization
+      - Value: Token <your_auth_token>
 
 - **Delete Topic**: Delete a topic by providing parameters in the query.
   - Method: DELETE
   - URL: `http://localhost:8000/notes/topics/delete_topic/?topic_name=<topic_name>&document_title=<document_title>`
   - Note: Parameters are provided in the query.
-    
+  - Note: Authentication details are required in the header.
+      - Key: Authorization
+      - Value: Token <your_auth_token>
 
 ### Lectures
 
@@ -199,15 +212,24 @@ The following API endpoints are available:
         "topics": [1, 9]
     }
     ```
-  
+  - Note: Authentication details are required in the header.
+      - Key: Authorization
+      - Value: Token <your_auth_token>
 
 - **Get All Lectures**: Retrieve a list of all lectures.
   - Method: GET
   - URL: `http://localhost:8000/notes/lectures/`
+  - Note: Authentication details are required in the header.
+      - Key: Authorization
+      - Value: Token <your_auth_token>
 
 - **Get Lecture by ID**: Retrieve a lecture by its ID.
   - Method: GET
   - URL: `http://localhost:8000/notes/lectures/<lecture_id>/`
+  - Note: Authentication details are required in the header.
+      - Key: Authorization
+      - Value: Token <your_auth_token>
+
 
 - **Update Lecture by ID**: Update a lecture by its ID.
   - Method: PUT
@@ -219,17 +241,25 @@ The following API endpoints are available:
         "topics": [1, 9]
     }
     ```
+  - Note: Authentication details are required in the header.
+      - Key: Authorization
+      - Value: Token <your_auth_token>
   
 
 - **Update Lecture by Query Parameters**: Update a lecture by providing its ID in query parameters.
   - Method: PUT
   - URL: `http://localhost:8000/notes/lectures/update_lecture/?id=<lecture_id>`
+  - Note: Authentication details are required in the header.
+      - Key: Authorization
+      - Value: Token <your_auth_token>
  
 
 - **Delete Lecture by Query Parameters**: Delete a lecture by providing its ID in query parameters.
   - Method: DELETE
   - URL: `http://localhost:8000/notes/lectures/delete_lecture/?id=<lecture_id>`
- 
+  - Note: Authentication details are required in the header.
+      - Key: Authorization
+      - Value: Token <your_auth_token>
 
 - **Delete Lecture by Request Data**: Delete a lecture by providing its ID in request data.
   - Method: DELETE
@@ -240,7 +270,9 @@ The following API endpoints are available:
         "id": 25
     }
     ```
- 
+  - Note: Authentication details are required in the header.
+      - Key: Authorization
+      - Value: Token <your_auth_token>
 
 
 

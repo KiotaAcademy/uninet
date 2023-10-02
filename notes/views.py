@@ -262,6 +262,9 @@ class TopicViewSet(viewsets.ModelViewSet):
 
     Provides CRUD operations for topics, along with additional actions like updating and deleting topics.
     """
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
     parser_classes = [MultiPartParser, FormParser]
@@ -383,6 +386,7 @@ class TopicViewSet(viewsets.ModelViewSet):
         Raises:
             Http404: If the topic is not found.
         """
+    
         lookup_field = self.lookup_field
         lookup_value = self.kwargs[lookup_field]
 
@@ -455,6 +459,9 @@ class TopicViewSet(viewsets.ModelViewSet):
 
 
 class LectureViewSet(viewsets.ModelViewSet):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    
     queryset = Lecture.objects.all()
     serializer_class = LectureSerializer
 
