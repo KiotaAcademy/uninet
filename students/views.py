@@ -37,4 +37,14 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
         return Response(download_links)
     
 
-    
+    @action(detail=True, methods=['GET'])
+    def attended_lectures(self, request, pk=None):
+        student_profile = self.get_object()
+        
+        # Filter attended lectures based on the student's user instance
+        attended_lectures = Lecture.objects.filter(students=student_profile.user)
+
+        # Create a list of attended lectures data including the download URLs
+        lecture_data = LectureSerializer(attended_lectures, many=True, context={'request': request}).data
+
+        return Response(lecture_data)
