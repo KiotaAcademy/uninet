@@ -13,4 +13,5 @@
 /notes/documents/
 
 
-/students/
+/students/migrations/
+/students/__pycache__/

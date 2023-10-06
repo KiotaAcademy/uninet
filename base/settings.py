@@ -69,6 +69,8 @@ INSTALLED_APPS = [
     'rest_framework', # App added by signmeup
 
     'notes',
+
+    'students',
 ]
 
 MIDDLEWARE = [
