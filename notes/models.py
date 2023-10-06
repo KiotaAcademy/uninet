@@ -65,6 +65,9 @@ class Topic(models.Model):
     start_page = models.PositiveIntegerField(blank=True)
     end_page = models.PositiveIntegerField(blank=True)
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -79,6 +82,7 @@ class Lecture(models.Model):
     topics = models.ManyToManyField(Topic, blank=True)
     students = models.ManyToManyField(User, related_name='lectures_attended', blank=True)
     lecturer_comments = models.TextField(blank=True)
+    
 
     class Meta:
         unique_together = ('name', 'lecturer')

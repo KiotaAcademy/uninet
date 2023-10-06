@@ -292,12 +292,14 @@ class TopicViewSet(viewsets.ModelViewSet):
             'name': request.data.get('name'),  # Assuming 'name' is a required field for topics
             'start_page': request.data.get('start_page', None),
             'end_page': request.data.get('end_page', None),
+            'uploaded_by': request.user.id,
         }
 
         if 'uploaded_document' in request.data:
             # Prepare the data for document creation
             document_data = {
-                'document': request.data['uploaded_document']
+                'document': request.data['uploaded_document'],
+                'uploaded_by': request.user.id,
             }
 
             # Call the create_document method to upload the document
@@ -323,7 +325,7 @@ class TopicViewSet(viewsets.ModelViewSet):
 
         existing_topic = Topic.objects.filter(name=topic_data['name'], document=topic_data['document']).first()
         if existing_topic:
-            raise ValidationError({'name': 'A topic with the same name already exists for the provided document.'})
+            raise ValidationError({'exists': 'A topic with the same name already exists for the provided document.'})
         # Create the topic
         serializer = TopicSerializer(data=topic_data, context={'request': request})
         if serializer.is_valid():
