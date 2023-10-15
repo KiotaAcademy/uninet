@@ -15,3 +15,10 @@
 
 /students/migrations/
 /students/__pycache__/
+
+/institutions/migrations/
+/institutions/__pycache__/
+
+
+/lecturers/migrations/
+/lecturers/__pycache__/
