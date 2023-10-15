@@ -1,12 +1,9 @@
 from rest_framework import serializers
-from .models import StudentProfile
+from .models import Student
 
-class StudentProfileSerializer(serializers.ModelSerializer):
-    # Add a SerializerMethodField to include the username
-    #username = serializers.SerializerMethodField()
-
+class StudentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = StudentProfile
+        model = Student
         fields = '__all__'
 
     username = serializers.ReadOnlyField(source='user.username')

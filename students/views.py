@@ -4,15 +4,15 @@ from rest_framework.response import Response
 
 from django.urls import reverse
 
-from .models import StudentProfile
-from .serializers import StudentProfileSerializer
+from .models import Student
+from .serializers import StudentSerializer
 
 from notes.models import Document, Lecture 
 from notes.serializers import DocumentSerializer, CategorySerializer, LectureSerializer
 
-class StudentProfileViewSet(viewsets.ModelViewSet):
-    queryset = StudentProfile.objects.all()
-    serializer_class = StudentProfileSerializer
+class StudentViewSet(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
 
     @action(detail=True, methods=['GET'])
     def student_documents(self, request, pk=None):
