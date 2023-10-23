@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, authentication, permissions
 from rest_framework.authtoken.models import Token
+from rest_framework import generics
 
 
 from django.contrib.auth.tokens import default_token_generator
@@ -15,10 +16,12 @@ from django.contrib.auth import authenticate
 
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 from accounts.serializers import UserSerializer, UserProfileSerializer
-from accounts.models import CustomUser as User
+# from accounts.models import CustomUser as User
 from accounts.models import UserProfile
 
 class GlobalFunctions:
@@ -264,3 +267,7 @@ class UserDeleteView(APIView):
         user_profile.delete()
         user.delete()
         return Response({'message': 'Account deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+class AllUsersView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
