@@ -6,4 +6,8 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = '__all__'
 
-    username = serializers.ReadOnlyField(source='user.username')
+    user_name = serializers.ReadOnlyField(source='user.username')
+    course_name = serializers.ReadOnlyField(source='course.name')
+    department_name = serializers.ReadOnlyField(source='course.department.name')
+    school_name = serializers.ReadOnlyField(source='course.department.school.name')
+    institution_name = serializers.ReadOnlyField(source='course.department.school.institution.name')
