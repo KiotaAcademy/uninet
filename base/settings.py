@@ -76,6 +76,8 @@ INSTALLED_APPS = [
 
     'institutions',
 
+    'clubs_societies',
+
 ]
 
 MIDDLEWARE = [
