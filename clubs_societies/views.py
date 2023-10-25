@@ -18,9 +18,7 @@ class ClubSocietyViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        # Set the created_by field to the user who is creating the club
         serializer.save(created_by=self.request.user)
         
-        # Add the user as a member
         club = serializer.instance
         club.members.add(self.request.user)
