@@ -7,7 +7,6 @@ User = get_user_model()
 class Lecturer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     institution = models.ForeignKey(Institution, on_delete=models.SET_NULL, null=True)
-    school = models.ForeignKey(School, on_delete=models.SET_NULL, null=True)
     departments = models.ManyToManyField(Department, related_name='lecturers')
 
     def __str__(self):

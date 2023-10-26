@@ -42,7 +42,7 @@ class GenericRelatedField(serializers.RelatedField):
         try:
             return self.queryset.get(**filter_kwargs)
         except self.queryset.model.DoesNotExist:
-            raise serializers.ValidationError(f"{self.queryset.model.__name__} does not exist")
+            raise serializers.ValidationError(f"{self.queryset.model.__name__} {data} does not exist")
 
     def to_representation(self, obj):
         """
