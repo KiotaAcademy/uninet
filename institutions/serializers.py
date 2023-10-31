@@ -22,8 +22,22 @@ class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
         fields = '__all__'
+
     courses = CourseSerializer(many=True, read_only=True)
     lecturers = LecturerSerializer(many=True, read_only=True)
+    head = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
+    secretary = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
+    created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
+    admins = GenericRelatedField(queryset=User.objects.all(), field="username", required=False, many=True)
+    school = GenericRelatedField(queryset=School.objects.all(), field="name")
+
+    def create(self, validated_data):
+        # Retrieve and merge provided admins with head and created_by
+        provided_admins = validated_data.pop('admins', [])
+        instance = super().create(validated_data)
+        instance.add_admins('head', 'secretary', 'created_by')
+        instance.admins.add(*provided_admins)
+        return instance
 
 class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,6 +45,19 @@ class SchoolSerializer(serializers.ModelSerializer):
         fields = '__all__'
     
     departments = DepartmentSerializer(many=True, read_only=True)
+    institution = GenericRelatedField(queryset=Institution.objects.all(), field="name")
+    head = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
+    secretary = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
+    created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
+    admins = GenericRelatedField(queryset=User.objects.all(), field="username", required=False, many=True)
+
+    def create(self, validated_data):
+        # Retrieve and merge provided admins with head and created_by
+        provided_admins = validated_data.pop('admins', [])
+        instance = super().create(validated_data)
+        instance.add_admins('head', 'secretary', 'created_by')
+        instance.admins.add(*provided_admins)
+        return instance
 
 
 class InstitutionSerializer(serializers.ModelSerializer):

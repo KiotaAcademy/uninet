@@ -20,7 +20,7 @@ class AdminsMixin(models.Model):
 
 # Model for the type of institution (e.g., college, university)
 class Institution(AdminsMixin, models.Model):
-    type = models.CharField(max_length=100)
+    category = models.CharField(max_length=100)
     name = models.CharField(max_length=200, unique=True)
     chancellor = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="chancellor_of", null=True, blank=True)
     vice_chancellor = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="vice_chancellor_of", null=True, blank=True)
@@ -31,28 +31,26 @@ class Institution(AdminsMixin, models.Model):
         return self.name
     
 
-# Model for a school in the institution (e.g., school of engineering)
-class School(models.Model):
-    name = models.CharField(max_length=200)
-    head = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+class School(AdminsMixin, models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    head = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="school_head")
+    secretary = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="school_secretary")
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE, related_name="schools")
-    # created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="created_schools", null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="created_schools", null=True)
 
     def __str__(self):
         return self.name
-    
 
-
-# Model for a department under a school (e.g., department of electrical engineering)
-class Department(models.Model):
-    name = models.CharField(max_length=200)
-    head = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+class Department(AdminsMixin, models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    head = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="department_head")
+    secretary = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="department_secretary")
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="departments")
-    #created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="created_departments", null=True)
-
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="created_departments", null=True)
 
     def __str__(self):
         return self.name
+
 
 # Model for a course offered by the department
 class Course(models.Model):
