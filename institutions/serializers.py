@@ -7,6 +7,29 @@ from base.general import GenericRelatedField
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
+# Define a function to add admins to an instance
+def add_admins_to_instance(instance, validated_data, default_admins):
+    """
+    Add default admin fields to provided admin fields for the given instance.
+
+    Args:
+        instance: The instance to which admins are added.
+        validated_data: The validated data dictionary from the serializer.
+        default_admins: List of default admin fields to add to the instance.
+
+    Returns:
+        The instance with combined admin fields.
+
+    Example:
+    To add default admin fields 'admin1' and 'admin2' to provided admins,
+    call: add_admins_to_instance(instance, validated_data, ['admin1', 'admin2'])
+    """
+    provided_admins = validated_data.pop('admins', [])
+    instance = instance.create(validated_data)
+    instance.add_admins(*default_admins)
+    instance.admins.add(*provided_admins)
+    return instance
+
 class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Unit
@@ -32,12 +55,9 @@ class DepartmentSerializer(serializers.ModelSerializer):
     school = GenericRelatedField(queryset=School.objects.all(), field="name")
 
     def create(self, validated_data):
-        # Retrieve and merge provided admins with head and created_by
-        provided_admins = validated_data.pop('admins', [])
-        instance = super().create(validated_data)
-        instance.add_admins('head', 'secretary', 'created_by')
-        instance.admins.add(*provided_admins)
-        return instance
+        default_admins = ['head', 'secretary', 'created_by']
+        return add_admins_to_instance(super(), validated_data, default_admins)
+
 
 class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,12 +72,9 @@ class SchoolSerializer(serializers.ModelSerializer):
     admins = GenericRelatedField(queryset=User.objects.all(), field="username", required=False, many=True)
 
     def create(self, validated_data):
-        # Retrieve and merge provided admins with head and created_by
-        provided_admins = validated_data.pop('admins', [])
-        instance = super().create(validated_data)
-        instance.add_admins('head', 'secretary', 'created_by')
-        instance.admins.add(*provided_admins)
-        return instance
+        default_admins = ['head', 'secretary', 'created_by']
+        return add_admins_to_instance(super(), validated_data, default_admins)
+
 
 
 class InstitutionSerializer(serializers.ModelSerializer):
@@ -72,11 +89,7 @@ class InstitutionSerializer(serializers.ModelSerializer):
     created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
 
     def create(self, validated_data):
-        # Retrieve and merge provided admins with chancellor, vice-chancellor, and created_by
-        provided_admins = validated_data.pop('admins', [])
-        instance = super().create(validated_data)
-        instance.add_admins('chancellor', 'vice_chancellor', 'created_by')
-        instance.admins.add(*provided_admins)
-        return instance
+        default_admins = ['chancellor', 'vice_chancellor', 'created_by']
+        return add_admins_to_instance(super(), validated_data, default_admins)
 
 
