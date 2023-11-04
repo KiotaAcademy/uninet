@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from .models import Institution, School, Department, Course, Unit
 from lecturers.serializers import LecturerSerializer
@@ -52,11 +53,21 @@ class DepartmentSerializer(serializers.ModelSerializer):
     secretary = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
     admins = GenericRelatedField(queryset=User.objects.all(), field="username", required=False, many=True)
-    school = GenericRelatedField(queryset=School.objects.all(), field="name")
+    school = GenericRelatedField(queryset=School.objects.all(), field="name", required=False)
 
     def create(self, validated_data):
         default_admins = ['head', 'secretary', 'created_by']
-        return add_admins_to_instance(super(), validated_data, default_admins)
+        # Determine the school based on the user's admin role
+        user = self.context['request'].user
+        schools = School.objects.filter(admins=user)
+
+        if schools.exists():
+            school = schools.first()
+            validated_data['school'] = school
+            return add_admins_to_instance(super(), validated_data, default_admins)
+
+        # If the user is not a school level admin, raise a validation error
+        raise ValidationError("You are not a school level admin in any school. Only school level admins can create departments within a school.")
 
 
 class SchoolSerializer(serializers.ModelSerializer):
@@ -65,7 +76,7 @@ class SchoolSerializer(serializers.ModelSerializer):
         fields = '__all__'
     
     departments = DepartmentSerializer(many=True, read_only=True)
-    institution = GenericRelatedField(queryset=Institution.objects.all(), field="name")
+    institution = GenericRelatedField(queryset=Institution.objects.all(), field="name", required=False)
     head = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     secretary = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
@@ -73,7 +84,18 @@ class SchoolSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         default_admins = ['head', 'secretary', 'created_by']
-        return add_admins_to_instance(super(), validated_data, default_admins)
+
+        # Determine the institution based on the user's admin role
+        user = self.context['request'].user
+        institutions = Institution.objects.filter(admins=user)
+        
+        if institutions.exists():
+            institution = institutions.first()
+            validated_data['institution'] = institution
+            return add_admins_to_instance(super(), validated_data, default_admins)
+        
+        # If the user is not an admin in any institution, raise a validation error
+        raise ValidationError("You are not an institution level admin in any institution. Only institution level admins can create schools within an institution.")
 
 
 
