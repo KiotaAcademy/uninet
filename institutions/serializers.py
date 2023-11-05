@@ -104,7 +104,7 @@ class InstitutionSerializer(serializers.ModelSerializer):
         model = Institution
         fields = '__all__'
     
-    schools = SchoolSerializer(many=True, read_only=True)  # Include related schools
+    # schools = SchoolSerializer(many=True, read_only=True)  # Include related schools
     chancellor = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     vice_chancellor = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     admins = GenericRelatedField(queryset=User.objects.all(), field="username", required=False, many=True)
