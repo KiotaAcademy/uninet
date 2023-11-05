@@ -32,7 +32,7 @@ class Institution(AdminsMixin, models.Model):
     
 
 class School(AdminsMixin, models.Model):
-    name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200)
     head = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="school_head")
     secretary = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="school_secretary")
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE, related_name="schools")
@@ -40,9 +40,11 @@ class School(AdminsMixin, models.Model):
 
     def __str__(self):
         return self.name
+    class Meta:
+        unique_together = ('name', 'institution')
 
 class Department(AdminsMixin, models.Model):
-    name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=200)
     head = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="department_head")
     secretary = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="department_secretary")
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="departments")
@@ -50,6 +52,8 @@ class Department(AdminsMixin, models.Model):
 
     def __str__(self):
         return self.name
+    class Meta:
+        unique_together = ('name', 'school')
 
 
 # Model for a course offered by the department
