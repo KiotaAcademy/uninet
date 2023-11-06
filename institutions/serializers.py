@@ -31,6 +31,12 @@ def add_admins_to_instance(instance, validated_data, default_admins):
     instance.admins.add(*provided_admins)
     return instance
 
+def merge_admins(existing_admins, new_admins):
+    """
+    Merge existing and new admin users while ensuring no duplicates.
+    """
+    return list(set(existing_admins) | set(new_admins))
+
 class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Unit
@@ -113,5 +119,16 @@ class InstitutionSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         default_admins = ['chancellor', 'vice_chancellor', 'created_by']
         return add_admins_to_instance(super(), validated_data, default_admins)
+    
+    def update(self, instance, validated_data):
+        # Handle updating 'admins' separately to avoid overwriting existing admins
+        new_admins = validated_data.pop('admins', [])
+        merged_admins = merge_admins(instance.admins.all(), new_admins)
+        instance.admins.set(merged_admins)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 

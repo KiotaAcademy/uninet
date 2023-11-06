@@ -3,6 +3,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import status
 
 from django.shortcuts import get_object_or_404
 
@@ -33,13 +34,45 @@ class InstitutionViewSet(viewsets.ModelViewSet):
         elif name_param:
             institution = self.queryset.filter(name=name_param).first()
         else:
-            return Response({'error': 'You must provide either the id or name parameter for the lookup.'}, status=400)
+            return Response({'error': 'You must provide either the id or name parameter for the lookup.'}, status.HTTP_400_BAD_REQUEST)
 
         if institution:
             serializer = self.get_serializer(institution)
             return Response(serializer.data)
         else:
-            return Response({'error': 'Institution not found.'}, status=404)
+            return Response({'error': 'Institution not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+    @action(detail=False, methods=['PUT'])
+    def update_institution(self, request):
+        """
+        Update an institution by either its primary key or name.
+        Use the 'id' parameter for the PK or 'name' for the name.
+        The user must be an institution-level admin to update.
+        """
+        id_param = request.query_params.get('id')
+        name_param = request.query_params.get('name')
+
+        if id_param:
+            institution = self.queryset.filter(pk=id_param).first()
+        elif name_param:
+            institution = self.queryset.filter(name=name_param).first()
+        else:
+            return Response({'error': 'You must provide either the id or name parameter for the lookup.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not institution:
+            return Response({'error': 'Institution not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if the user is an institution-level admin
+        user = request.user
+        if user not in institution.admins.all():
+            return Response({'error': 'You are not authorized to update this institution. Only institution-level admins can update.'}, status=status.HTTP_403_FORBIDDEN)
+
+        # Proceed with the update logic here
+        serializer = self.get_serializer(institution, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
 class SchoolViewSet(viewsets.ModelViewSet):
