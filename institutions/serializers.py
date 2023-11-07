@@ -114,6 +114,8 @@ class InstitutionSerializer(serializers.ModelSerializer):
     chancellor = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     vice_chancellor = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     admins = GenericRelatedField(queryset=User.objects.all(), field="username", required=False, many=True)
+    remove_admins = GenericRelatedField(queryset=User.objects.all(), field="username", required=False, many=True)
+
     created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
 
     def create(self, validated_data):
@@ -121,6 +123,11 @@ class InstitutionSerializer(serializers.ModelSerializer):
         return add_admins_to_instance(super(), validated_data, default_admins)
     
     def update(self, instance, validated_data):
+        # Handle 'admins' removal
+        remove_admins = validated_data.pop('remove_admins', [])
+        print(f"remove_admins: {remove_admins}")
+        instance.admins.remove(*remove_admins)
+
         # Handle updating 'admins' separately to avoid overwriting existing admins
         new_admins = validated_data.pop('admins', [])
         merged_admins = merge_admins(instance.admins.all(), new_admins)
