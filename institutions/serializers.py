@@ -125,7 +125,6 @@ class InstitutionSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # Handle 'admins' removal
         remove_admins = validated_data.pop('remove_admins', [])
-        print(f"remove_admins: {remove_admins}")
         instance.admins.remove(*remove_admins)
 
         # Handle updating 'admins' separately to avoid overwriting existing admins

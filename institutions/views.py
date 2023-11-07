@@ -31,18 +31,16 @@ class ObjectViewMixin:
 
         return obj
 
-    def check_authorization(self, obj, user, user_field='admins'):
+    def check_authorization(self, obj, user, authorized_users_field='admins'):
         """
         Check if the user is authorized to perform actions on the object.
         The user must be an object-level admin to perform these actions.
         """
-        if user_field not in obj._meta.fields:
-            return Response({'error': f'Invalid field name {user_field} for object-level admins.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if user not in getattr(obj, user_field).all():
-            return Response({'error': f'You are not authorized to perform this action on this object. Only object-level admins can do this.'}, status=status.HTTP_403_FORBIDDEN)
+        if user not in getattr(obj, authorized_users_field).all():
+            return False  # Return False when the user is not authorized
 
-        return None
+        return True  # Return True when the user is authorized
+
 
 
 class InstitutionViewSet(ObjectViewMixin, viewsets.ModelViewSet):
@@ -58,15 +56,16 @@ class InstitutionViewSet(ObjectViewMixin, viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])
     def retrieve_institution(self, request):
         institution = self.lookup_object(request, self.queryset)
-        self.check_authorization(institution, request.user)
-
         serializer = self.get_serializer(institution)
         return Response(serializer.data)
 
     @action(detail=False, methods=['PUT'])
     def update_institution(self, request):
         institution = self.lookup_object(request, self.queryset)
-        self.check_authorization(institution, request.user)
+        authorized = self.check_authorization(institution, request.user)
+
+        if not authorized:
+            return Response({'error': 'You are not authorized to update this institution. Only institution-level admins can update.'}, status=status.HTTP_403_FORBIDDEN)
 
         serializer = self.get_serializer(institution, data=request.data, partial=True)
         if serializer.is_valid():
@@ -77,7 +76,10 @@ class InstitutionViewSet(ObjectViewMixin, viewsets.ModelViewSet):
     @action(detail=False, methods=['DELETE'])
     def delete_institution(self, request):
         institution = self.lookup_object(request, self.queryset)
-        self.check_authorization(institution, request.user)
+        authorized = self.check_authorization(institution, request.user)
+
+        if not authorized:
+            return Response({'error': 'You are not authorized to DELETE this institution. Only institution-level admins can DELETE.'}, status=status.HTTP_403_FORBIDDEN)
 
         institution.delete()
         return Response({'message': 'Institution deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
