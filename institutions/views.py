@@ -10,7 +10,42 @@ from django.shortcuts import get_object_or_404
 from .models import Institution, School, Department, Course, Unit
 from .serializers import InstitutionSerializer, SchoolSerializer, DepartmentSerializer, CourseSerializer, UnitSerializer
 
-class InstitutionViewSet(viewsets.ModelViewSet):
+class ObjectViewMixin:
+    """
+    A mixin for viewsets to provide object lookup and authorization checks.
+    """
+    def lookup_object(self, request, queryset, id_param='id', name_param='name'):
+        """
+        Retrieve an object by either its primary key or name using the given queryset.
+        Use the 'id' parameter for the PK or 'name' for the name.
+        """
+        id_param_value = request.query_params.get(id_param)
+        name_param_value = request.query_params.get(name_param)
+
+        if id_param_value:
+            obj = get_object_or_404(queryset, pk=id_param_value)
+        elif name_param_value:
+            obj = get_object_or_404(queryset, name=name_param_value)
+        else:
+            return Response({'error': f'You must provide either the {id_param} or {name_param} parameter for the lookup.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return obj
+
+    def check_authorization(self, obj, user, user_field='admins'):
+        """
+        Check if the user is authorized to perform actions on the object.
+        The user must be an object-level admin to perform these actions.
+        """
+        if user_field not in obj._meta.fields:
+            return Response({'error': f'Invalid field name {user_field} for object-level admins.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if user not in getattr(obj, user_field).all():
+            return Response({'error': f'You are not authorized to perform this action on this object. Only object-level admins can do this.'}, status=status.HTTP_403_FORBIDDEN)
+
+        return None
+
+
+class InstitutionViewSet(ObjectViewMixin, viewsets.ModelViewSet):
     queryset = Institution.objects.all()
     serializer_class = InstitutionSerializer
 
@@ -19,61 +54,34 @@ class InstitutionViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
-    
+
     @action(detail=False, methods=['GET'])
     def retrieve_institution(self, request):
-        """
-        Retrieve an institution by either its primary key or name.
-        Use the 'id' parameter for the PK or 'name' for the name.
-        """
-        id_param = request.query_params.get('id')
-        name_param = request.query_params.get('name')
+        institution = self.lookup_object(request, self.queryset)
+        self.check_authorization(institution, request.user)
 
-        if id_param:
-            institution = self.queryset.filter(pk=id_param).first()
-        elif name_param:
-            institution = self.queryset.filter(name=name_param).first()
-        else:
-            return Response({'error': 'You must provide either the id or name parameter for the lookup.'}, status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(institution)
+        return Response(serializer.data)
 
-        if institution:
-            serializer = self.get_serializer(institution)
-            return Response(serializer.data)
-        else:
-            return Response({'error': 'Institution not found.'}, status=status.HTTP_404_NOT_FOUND)
-        
     @action(detail=False, methods=['PUT'])
     def update_institution(self, request):
-        """
-        Update an institution by either its primary key or name.
-        Use the 'id' parameter for the PK or 'name' for the name.
-        The user must be an institution-level admin to update.
-        """
-        id_param = request.query_params.get('id')
-        name_param = request.query_params.get('name')
+        institution = self.lookup_object(request, self.queryset)
+        self.check_authorization(institution, request.user)
 
-        if id_param:
-            institution = self.queryset.filter(pk=id_param).first()
-        elif name_param:
-            institution = self.queryset.filter(name=name_param).first()
-        else:
-            return Response({'error': 'You must provide either the id or name parameter for the lookup.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not institution:
-            return Response({'error': 'Institution not found.'}, status=status.HTTP_404_NOT_FOUND)
-
-        # Check if the user is an institution-level admin
-        user = request.user
-        if user not in institution.admins.all():
-            return Response({'error': 'You are not authorized to update this institution. Only institution-level admins can update.'}, status=status.HTTP_403_FORBIDDEN)
-
-        # Proceed with the update logic here
         serializer = self.get_serializer(institution, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
+    @action(detail=False, methods=['DELETE'])
+    def delete_institution(self, request):
+        institution = self.lookup_object(request, self.queryset)
+        self.check_authorization(institution, request.user)
+
+        institution.delete()
+        return Response({'message': 'Institution deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
 
 class SchoolViewSet(viewsets.ModelViewSet):
     queryset = School.objects.all()
