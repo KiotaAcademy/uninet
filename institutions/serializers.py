@@ -123,17 +123,33 @@ class InstitutionSerializer(serializers.ModelSerializer):
         return add_admins_to_instance(super(), validated_data, default_admins)
     
     def update(self, instance, validated_data):
+        # Get the default admins from the instance
+        old_default_admins = {instance.chancellor, instance.vice_chancellor, instance.created_by}
+
+        # Get the users in the 'remove_admins' list excluding the old default admins
+        remove_admins = set(validated_data.pop('remove_admins', [])) - old_default_admins
+
         # Handle 'admins' removal
-        remove_admins = validated_data.pop('remove_admins', [])
         instance.admins.remove(*remove_admins)
 
         # Handle updating 'admins' separately to avoid overwriting existing admins
         new_admins = validated_data.pop('admins', [])
+        # Merge existing admins and new admins while ensuring no duplicates
         merged_admins = merge_admins(instance.admins.all(), new_admins)
         instance.admins.set(merged_admins)
 
+        # Check if the default admin users are changed and update 'admins' accordingly
+        for field in ['chancellor', 'vice_chancellor', 'created_by']:
+            new_user = validated_data.get(field, getattr(instance, field))
+            print(f"new {field}: {new_user}, old {field}: {getattr(instance, field)}")
+            if new_user != getattr(instance, field):
+                instance.admins.remove(getattr(instance, field))
+                instance.admins.add(new_user)
+        
+        # Update the instance with the remaining validated data
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
+
         instance.save()
         return instance
 
