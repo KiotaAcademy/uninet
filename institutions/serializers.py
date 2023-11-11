@@ -1,6 +1,10 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from django.db.models import Model
+
+from typing import List
+
 from .models import Institution, School, Department, Course, Unit
 from lecturers.serializers import LecturerSerializer
 from base.general import GenericRelatedField
@@ -36,6 +40,48 @@ def merge_admins(existing_admins, new_admins):
     Merge existing and new admin users while ensuring no duplicates.
     """
     return list(set(existing_admins) | set(new_admins))
+
+def update_admins_for_instance(instance: Model, validated_data: dict, default_admin_fields: List[str]):
+    """
+    Update admin users for the given instance based on the provided validated data.
+
+    Args:
+        instance: The instance for which admins are updated.
+        validated_data: The validated data dictionary from the serializer.
+        admin_fields: List of admin fields to update.
+
+    Returns:
+        The updated instance.
+
+    Example:
+    To update admins for fields 'chancellor', 'vice_chancellor', 'created_by',
+    call: update_admins_for_instance(instance, validated_data, ['chancellor', 'vice_chancellor', 'created_by'])
+    """
+    # Get the default admins from the instance
+    old_default_admins = {getattr(instance, field) for field in default_admin_fields}
+
+    # Get the users in the 'remove_admins' list excluding the old default admins
+    remove_admins = set(validated_data.pop('remove_admins', [])) - old_default_admins
+
+    # Handle 'admins' removal
+    instance.admins.remove(*remove_admins)
+
+    # Handle updating 'admins' separately to avoid overwriting existing admins
+    new_admins = validated_data.pop('admins', [])
+    # Merge existing admins and new admins while ensuring no duplicates
+    merged_admins = merge_admins(instance.admins.all(), new_admins)
+    instance.admins.set(merged_admins)
+
+    # Check if the default admin users are changed and update 'admins' accordingly
+    for field in default_admin_fields:
+        new_user = validated_data.get(field, getattr(instance, field))
+        if new_user != getattr(instance, field):
+            instance.admins.remove(getattr(instance, field))
+            instance.admins.add(new_user)
+
+    return instance
+
+
 
 class UnitSerializer(serializers.ModelSerializer):
     class Meta:
@@ -123,29 +169,9 @@ class InstitutionSerializer(serializers.ModelSerializer):
         return add_admins_to_instance(super(), validated_data, default_admins)
     
     def update(self, instance, validated_data):
-        # Get the default admins from the instance
-        old_default_admins = {instance.chancellor, instance.vice_chancellor, instance.created_by}
+        default_admin_fields = ['chancellor', 'vice_chancellor', 'created_by']
+        instance = update_admins_for_instance(instance, validated_data, default_admin_fields)
 
-        # Get the users in the 'remove_admins' list excluding the old default admins
-        remove_admins = set(validated_data.pop('remove_admins', [])) - old_default_admins
-
-        # Handle 'admins' removal
-        instance.admins.remove(*remove_admins)
-
-        # Handle updating 'admins' separately to avoid overwriting existing admins
-        new_admins = validated_data.pop('admins', [])
-        # Merge existing admins and new admins while ensuring no duplicates
-        merged_admins = merge_admins(instance.admins.all(), new_admins)
-        instance.admins.set(merged_admins)
-
-        # Check if the default admin users are changed and update 'admins' accordingly
-        for field in ['chancellor', 'vice_chancellor', 'created_by']:
-            new_user = validated_data.get(field, getattr(instance, field))
-            print(f"new {field}: {new_user}, old {field}: {getattr(instance, field)}")
-            if new_user != getattr(instance, field):
-                instance.admins.remove(getattr(instance, field))
-                instance.admins.add(new_user)
-        
         # Update the instance with the remaining validated data
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
