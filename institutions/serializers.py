@@ -12,27 +12,69 @@ from base.general import GenericRelatedField
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-class AdminsMixin:
+
+class AdminsSerializerMixin:
+    """
+    A mixin with utility methods for handling admins in serializers.
+    """
+
     @staticmethod
-    def add_admins_to_instance(instance, validated_data, default_admins):
+    def add_admins_to_instance(instance: Model, validated_data: dict, default_admins: List[str]) -> Model:
+        """
+        Add default and provided admin users to the created instance.
+        Used in the create method of the serializer.
+
+        Args:
+            instance (Model): The instance to which admins are added.
+            validated_data (dict): The validated data dictionary from the serializer.
+            default_admins (List[str]): List of default admin fields to add to the instance.
+
+        Returns:
+            Model: The instance with combined admin fields.
+        """
         provided_admins = validated_data.pop('admins', [])
-        instance = instance.create(validated_data)
-        instance.add_admins(*default_admins)
+        instance.add_admins_from_specified_fields(*default_admins)
         instance.admins.add(*provided_admins)
         return instance
 
     @staticmethod
-    def merge_admins(existing_admins, new_admins):
+    def merge_admins(existing_admins: List, new_admins: List) -> List:
+        """
+        Merge existing and new admin users while ensuring no duplicates.
+
+        Args:
+            existing_admins (List): List of existing admin users.
+            new_admins (List): List of new admin users.
+
+        Returns:
+            List: Merged list of admin users.
+        """
         return list(set(existing_admins) | set(new_admins))
 
     @staticmethod
-    def update_admins_for_instance(instance: Model, validated_data: dict, default_admin_fields: List[str]):
+    def update_admins_for_instance(instance: Model, validated_data: dict, default_admin_fields: List[str]) -> Model:
+        """
+        Update admin users for the given instance based on the provided validated data.
+        Used in the update method of the serializer.
+
+        Args:
+            instance (Model): The instance for which admins are updated.
+            validated_data (dict): The validated data dictionary from the serializer.
+            default_admin_fields (List[str]): List of default admin fields for the associated model.
+
+        Returns:
+            Model: The updated instance.
+        """
         old_default_admins = {getattr(instance, field) for field in default_admin_fields}
         remove_admins = set(validated_data.pop('remove_admins', [])) - old_default_admins
+        
         instance.admins.remove(*remove_admins)
+        
         new_admins = validated_data.pop('admins', [])
-        merged_admins = AdminsMixin.merge_admins(instance.admins.all(), new_admins)
+        merged_admins = AdminsSerializerMixin.merge_admins(instance.admins.all(), new_admins)
         instance.admins.set(merged_admins)
+        
+        # check if any default admins have changed users and update the admins list for the instance accordingly
         for field in default_admin_fields:
             new_user = validated_data.get(field, getattr(instance, field))
             if new_user != getattr(instance, field):
@@ -53,7 +95,7 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = '__all__'
     department_name = serializers.ReadOnlyField(source='department.name')
 
-class DepartmentSerializer(AdminsMixin, serializers.ModelSerializer):
+class DepartmentSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = Department
         fields = '__all__'
@@ -75,13 +117,14 @@ class DepartmentSerializer(AdminsMixin, serializers.ModelSerializer):
         if schools.exists():
             school = schools.first()
             validated_data['school'] = school
-            return self.add_admins_to_instance(super(), validated_data, default_admins)
+            instance = super().create(validated_data)
+            return self.add_admins_to_instance(instance, validated_data, default_admins)
 
         # If the user is not a school level admin, raise a validation error
         raise ValidationError("You are not a school level admin in any school. Only school level admins can create departments within a school.")
 
 
-class SchoolSerializer(AdminsMixin, serializers.ModelSerializer):
+class SchoolSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = School
         fields = '__all__'
@@ -103,14 +146,15 @@ class SchoolSerializer(AdminsMixin, serializers.ModelSerializer):
         if institutions.exists():
             institution = institutions.first()
             validated_data['institution'] = institution
-            return self.add_admins_to_instance(super(), validated_data, default_admins)
+            instance = super().create(validated_data)
+            return self.add_admins_to_instance(instance, validated_data, default_admins)
         
         # If the user is not an admin in any institution, raise a validation error
         raise ValidationError("You are not an institution level admin in any institution. Only institution level admins can create schools within an institution.")
 
 
 
-class InstitutionSerializer(AdminsMixin, serializers.ModelSerializer):
+class InstitutionSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = Institution
         fields = '__all__'
@@ -125,7 +169,8 @@ class InstitutionSerializer(AdminsMixin, serializers.ModelSerializer):
 
     def create(self, validated_data):
         default_admins = ['chancellor', 'vice_chancellor', 'created_by']
-        return self.add_admins_to_instance(super(), validated_data, default_admins)
+        instance = super().create(validated_data)
+        return self.add_admins_to_instance(instance, validated_data, default_admins)
     
     def update(self, instance, validated_data):
         default_admin_fields = ['chancellor', 'vice_chancellor', 'created_by']
