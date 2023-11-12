@@ -9,39 +9,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import Institution, School, Department, Course, Unit
 from .serializers import InstitutionSerializer, SchoolSerializer, DepartmentSerializer, CourseSerializer, UnitSerializer
-
-class ObjectViewMixin:
-    """
-    A mixin for viewsets to provide object lookup and authorization checks.
-    """
-    def lookup_object(self, request, queryset, id_param='id', name_param='name'):
-        """
-        Retrieve an object by either its primary key or name using the given queryset.
-        Use the 'id' parameter for the PK or 'name' for the name.
-        """
-        id_param_value = request.query_params.get(id_param)
-        name_param_value = request.query_params.get(name_param)
-
-        if id_param_value:
-            obj = get_object_or_404(queryset, pk=id_param_value)
-        elif name_param_value:
-            obj = get_object_or_404(queryset, name=name_param_value)
-        else:
-            return Response({'error': f'You must provide either the {id_param} or {name_param} parameter for the lookup.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        return obj
-
-    def check_authorization(self, obj, user, authorized_users_field='admins'):
-        """
-        Check if the user is authorized to perform actions on the object.
-        The user must be an object-level admin to perform these actions.
-        """
-        if user not in getattr(obj, authorized_users_field).all():
-            return False  # Return False when the user is not authorized
-
-        return True  # Return True when the user is authorized
-
-
+from base.shared_across_apps.mixins import ObjectViewMixin
 
 class InstitutionViewSet(ObjectViewMixin, viewsets.ModelViewSet):
     queryset = Institution.objects.all()

@@ -3,7 +3,7 @@ from .models import ClubSociety
 from accounts.serializers import UserProfileSerializer
 from institutions.models import Institution
 from django.contrib.auth import get_user_model
-from base.general import GenericRelatedField
+from base.shared_across_apps.serializers import GenericRelatedField
 
 User = get_user_model()
 

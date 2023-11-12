@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Lecturer
 from accounts.serializers import UserProfileSerializer
-from base.general import GenericRelatedField
+from base.shared_across_apps.serializers import GenericRelatedField
 from institutions.models import Institution, Department
 
 from django.contrib.auth import get_user_model
