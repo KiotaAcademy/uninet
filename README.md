@@ -39,6 +39,136 @@ The following API endpoints are available:
   - URL: `http://localhost:8000/accounts/delete/`
   - Requires authentication: Yes
 
+
+
+
+## Institutions App
+
+### Institution
+- **Create Institution**: Create a new institution.
+  - Method: POST
+  - URL: `http://localhost:8000/institutions/institution/`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Request Data Example:
+    ```json
+    {
+        "category": "university",
+        "name": "<institution_name>"
+    }
+    ```
+  - Sample Response:
+    ```json
+    {
+        "id": 73,
+        "chancellor": "<chancellor_username>",
+        "vice_chancellor": null,
+        "admins": ["<chancellor_username>", "<created_by_username>", "<admin1_username>", "<admin2_username>"],
+        "created_by": "<created_by_username>",
+        "category": "university",
+        "name": "<institution_name>"
+    }
+    ```
+  - `Note:` chancellor, vice_chancellor and created_by are always added by default to the admins list. Their admin status cannot be changed unless new users are provided in their place. i.e. If chancellor is changed to a different user. 
+    
+
+
+- **Get Institution by Name**: Retrieve an institution by its name.
+  - Method: GET
+  - URL: `http://localhost:8000/institutions/institution/retrieve_institution/?name=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Response:
+    ```json
+    {
+        "id": 73,
+        "chancellor": "<chancellor_username>",
+        "vice_chancellor": null,
+        "admins": ["<chancellor_username>", "<created_by_username>", "<admin1_username>", "<admin2_username>"],
+        "created_by": "<created_by_username>",
+        "category": "university",
+        "name": "<institution_name>"
+    }
+    ```
+
+- **Get Institution by ID**: Retrieve an institution by its ID.
+  - Method: GET
+  - URL: `http://localhost:8000/institutions/institution/retrieve_institution/?id=33`
+  - OR
+  - URL: `http://localhost:8000/institutions/institution/32/`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Response:
+    ```json
+    {
+        "id": 73,
+        "chancellor": "<chancellor_username>",
+        "vice_chancellor": null,
+        "admins": ["<chancellor_username>", "<created_by_username>", "<admin1_username>", "<admin2_username>"],
+        "created_by": "<created_by_username>",
+        "category": "university",
+        "name": "<institution_name>"
+    }
+    ```
+
+- **Update Institution**: Update an institution by its name.
+  - Method: PUT
+  - URL: `http://localhost:8000/institutions/institution/update_institution/?name=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Request Data:
+    ```json
+    {
+        "chancellor": "<new_chancellor_username>",
+        "remove_admins": ["<admin1_username>"]
+    }
+    ```
+  - Sample Response: Updated institution details.
+    ```json
+    {
+        "id": 73,
+        "chancellor": "<new_chancellor_username>",
+        "vice_chancellor": null,
+        "admins": ["<chancellor_username>", "<created_by_username>", "<admin2_username>"],
+        "created_by": "<created_by_username>",
+        "category": "university",
+        "name": "<institution_name>"
+    }
+    ```
+  - **Response when not authorized:**
+  ```json
+  {
+      "error": "You are not authorized to update this institution. Only institution-level admins can update."
+  }
+
+
+- **Delete Institution**: Delete an institution by its name.
+  - Method: DELETE
+  - URL: `http://localhost:8000/institutions/institution/delete_institution/?name=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Response: Message indicating successful deletion.
+  - **Response when not authorized:**
+ ```json
+ {
+    "error": "You are not authorized to DELETE this institution. Only institution-level admins can DELETE."
+}
+```
+
+
+
+
+
 ## Notes App
 
 ### Categories
