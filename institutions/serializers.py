@@ -53,9 +53,14 @@ class SchoolSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = School
         fields = '__all__'
-    
+
     departments = DepartmentSerializer(many=True, read_only=True)
-    institution = GenericRelatedField(queryset=Institution.objects.all(), field="name", required=False)
+    institution = serializers.StringRelatedField(source='institution.name', read_only=True)
+
+    # Use the following line only if you intend to provide the institution in the request.
+    # The 'institution' field is automatically filled based on the institution the user is an admin of.
+    # institution = GenericRelatedField(queryset=Institution.objects.all(), field="name", required=False)
+    
     head = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     secretary = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
