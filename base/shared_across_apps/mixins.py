@@ -2,8 +2,10 @@ from typing import List
 
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 
 from django.db import models
+from django.db.models import Q
 from django.db.models import Model
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
@@ -125,21 +127,41 @@ class ObjectViewMixin:
     """
     A mixin for viewsets to provide object lookup and authorization checks.
     """
-    def lookup_object(self, request, queryset, id_param='id', name_param='name'):
+    def lookup_object(self, request, queryset, id_param='id', name_param='name', filters=None):
         """
         Retrieve an object by either its primary key or name using the given queryset.
-        Use the 'id' parameter for the PK or 'name' for the name.
-        """
-        id_param_value = request.query_params.get(id_param)
-        name_param_value = request.query_params.get(name_param)
+        
+        Parameters:
+        - request: The HTTP request object.
+        - queryset: The queryset to search for the object.
+        - id_param: The parameter name for the primary key (default is 'id').
+        - name_param: The parameter name for the name (default is 'name').
+        - filters: A dictionary with conditions for filtering (default is None).
 
+        Returns:
+        - The retrieved object or objects.
+
+        Raises:
+        - ValidationError: If neither 'id' nor 'name' parameters are provided.
+        """
+        id_param_value = request.query_params.get(id_param, None)
+        name_param_value = request.query_params.get(name_param, None)
+        
         if id_param_value:
             obj = get_object_or_404(queryset, pk=id_param_value)
         elif name_param_value:
-            obj = get_object_or_404(queryset, name=name_param_value)
+            # Use Q objects to handle OR conditions for the same name in different institutions
+            filter_conditions = Q(name__iexact=name_param_value)
+            if not filters:
+                return queryset.filter(filter_conditions)
+            
+            for key, value in filters.items():
+                filter_conditions &= Q(**{f"{key}__iexact": value})
+                obj = get_object_or_404(queryset, filter_conditions)
         else:
-            return Response({'error': f'You must provide either the {id_param} or {name_param} parameter for the lookup.'}, status=status.HTTP_400_BAD_REQUEST)
-
+            # If no parameters are provided, raise a ValidationError
+            raise ValidationError("You must provide either the 'id' or 'name' parameter for the lookup.")
+        
         return obj
 
     def check_authorization(self, obj, user, authorized_users_field='admins'):

@@ -82,6 +82,16 @@ class SchoolSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
         # If the user is not an admin in any institution, raise a validation error
         raise ValidationError("You are not an institution level admin in any institution. Only institution level admins can create schools within an institution.")
 
+    def update(self, instance, validated_data):
+        default_admin_fields = ['head', 'secretary'] # exclude created_by as its admin status should not be updated 
+        instance = self.update_admins_for_instance(instance, validated_data, default_admin_fields)
+
+        # Update the instance with the remaining validated data
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
 
 
 class InstitutionSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
@@ -103,7 +113,7 @@ class InstitutionSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
         return self.add_admins_to_instance(instance, validated_data, default_admins)
     
     def update(self, instance, validated_data):
-        default_admin_fields = ['chancellor', 'vice_chancellor', 'created_by']
+        default_admin_fields = ['chancellor', 'vice_chancellor']
         instance = self.update_admins_for_instance(instance, validated_data, default_admin_fields)
 
         # Update the instance with the remaining validated data

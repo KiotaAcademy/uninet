@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from django.shortcuts import get_object_or_404
+from django.db.models import QuerySet
 
 from .models import Institution, School, Department, Course, Unit
 from .serializers import InstitutionSerializer, SchoolSerializer, DepartmentSerializer, CourseSerializer, UnitSerializer
@@ -53,7 +54,7 @@ class InstitutionViewSet(ObjectViewMixin, viewsets.ModelViewSet):
         return Response({'message': 'Institution deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 
-class SchoolViewSet(viewsets.ModelViewSet):
+class SchoolViewSet(ObjectViewMixin, viewsets.ModelViewSet):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
 
@@ -62,6 +63,44 @@ class SchoolViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+    @action(detail=False, methods=['GET'])
+    def retrieve_school(self, request):
+        institution_name = request.query_params.get('institution', None)
+
+        if institution_name:
+            school = self.lookup_object(request, self.queryset, filters={'institution__name': institution_name})
+            serializer = self.get_serializer(school)
+        else:
+            schools = self.lookup_object(request, self.queryset)
+            serializer = self.get_serializer(schools, many=True)
+            
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['PUT'])
+    def update_school(self, request):
+        school = self.lookup_object(request, self.queryset)
+        authorized = self.check_authorization(school, request.user)
+
+        if not authorized:
+            return Response({'error': 'You are not authorized to update this school. Only school-level admins can update.'}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = self.get_serializer(school, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['DELETE'])
+    def delete_school(self, request):
+        school = self.lookup_object(request, self.queryset)
+        authorized = self.check_authorization(school, request.user)
+
+        if not authorized:
+            return Response({'error': 'You are not authorized to DELETE this school. Only school-level admins can DELETE.'}, status=status.HTTP_403_FORBIDDEN)
+
+        school.delete()
+        return Response({'message': 'School deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 
 class DepartmentViewSet(viewsets.ModelViewSet):
