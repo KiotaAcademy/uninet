@@ -79,7 +79,11 @@ class SchoolViewSet(ObjectViewMixin, viewsets.ModelViewSet):
 
     @action(detail=False, methods=['PUT'])
     def update_school(self, request):
-        school = self.lookup_object(request, self.queryset)
+        institution_name = request.query_params.get('institution', None)
+        if not institution_name:
+            return Response({'error': 'You must provide the institution in the query parameters of the request'}, status=status.HTTP_400_BAD_REQUEST)
+
+        school = self.lookup_object(request, self.queryset, filters={'institution__name': institution_name})
         authorized = self.check_authorization(school, request.user)
 
         if not authorized:
@@ -93,7 +97,11 @@ class SchoolViewSet(ObjectViewMixin, viewsets.ModelViewSet):
 
     @action(detail=False, methods=['DELETE'])
     def delete_school(self, request):
-        school = self.lookup_object(request, self.queryset)
+        institution_name = request.query_params.get('institution', None)
+        if not institution_name:
+            return Response({'error': 'You must provide the institution in the query parameters of the request'}, status=status.HTTP_400_BAD_REQUEST)
+
+        school = self.lookup_object(request, self.queryset, filters={'institution__name': institution_name})
         authorized = self.check_authorization(school, request.user)
 
         if not authorized:
@@ -101,7 +109,6 @@ class SchoolViewSet(ObjectViewMixin, viewsets.ModelViewSet):
 
         school.delete()
         return Response({'message': 'School deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
-
 
 class DepartmentViewSet(viewsets.ModelViewSet):
     queryset = Department.objects.all()
