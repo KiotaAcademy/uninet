@@ -167,6 +167,177 @@ The following API endpoints are available:
 
 
 
+### School
+
+- **Create School**: Create a new school.
+  - Method: POST
+  - URL: `http://localhost:8000/institutions/school/`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Request Data Example:
+    ```json
+    {
+        "name": "<school_name>",
+        "head": "<head_username>",
+        "admins": ["<school_admin1_username>", "<school_admin2_username>"]
+    }
+    ```
+  - Sample Response:
+    ```json
+    {
+        "id": <school_id>,
+        "name": "<school_name>",
+        "head": "<head_username>",
+        "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+        "created_by": "<created_by_username>",
+        "institution": "<institution_name>"
+    }
+    ```
+  - `Note:` The institution is automatically set based on the institution the user is an admin. If not an institution leve admin in any institution, the user can't create schools.
+
+- **Get School by Name**: Retrieve a school by its name.
+  - Method: GET
+  - URL: `http://localhost:8000/institutions/school/retrieve_school/?name=<school_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Response:
+    ```json
+    {
+        "id": <school_id>,
+        "name": "<school_name>",
+        "head": "<head_username>",
+        "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+        "created_by": "<created_by_username>",
+        "institution": "<institution_name>"
+    }
+    ```
+  - **Response when no parameters provided:**
+    ```json
+    {
+        "error": "You must provide either the 'id' or 'name' parameter for the lookup."
+    }
+  - **Response when no institution provided:All schools with that nam are returned**
+    ```json
+    [
+        {
+            "id": <school_id_1>,
+            "name": "<school_name>",
+            "head": "<head_username>",
+            "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+            "created_by": "<created_by_username>",
+            "institution": "<institution_name_1>"
+        },
+        {
+            "id": <school_id_2>,
+            "name": "<school_name>",
+            "head": "<head_username>",
+            "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+            "created_by": "<created_by_username>",
+            "institution": "<institution_name_2>"
+        },
+        ...
+    ]
+    ```
+
+**Get School by ID**: Retrieve a school by its ID.
+  - Method: GET
+  - URL: `http://localhost:8000/institutions/school/retrieve_school/?id=<school_id>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Response:
+    ```json
+    {
+        "id": <school_id>,
+        "name": "<school_name>",
+        "head": "<head_username>",
+        "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+        "created_by": "<created_by_username>",
+        "institution": "<institution_name>"
+    }
+    ```
+  - **Response when no parameters provided:**
+    ```json
+    {
+        "error": "You must provide either the 'id' or 'name' parameter for the lookup."
+    }
+  - **Response when no institution provided: All schools with that nam are returned**
+    ```json
+    [
+        {
+            "id": <school_id_1>,
+            "name": "<school_name>",
+            "head": "<head_username>",
+            "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+            "created_by": "<created_by_username>",
+            "institution": "<institution_name_1>"
+        },
+        {
+            "id": <school_id_2>,
+            "name": "<school_name>",
+            "head": "<head_username>",
+            "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+            "created_by": "<created_by_username>",
+            "institution": "<institution_name_2>"
+        },
+        ...
+    ]
+    ```
+
+
+- **Update School**: Update a school by its name.
+  - Method: PUT
+  - URL: `http://localhost:8000/institutions/school/update_school/?name=<school_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Request Data:
+    ```json
+    {
+        "head": "<new_head_username>",
+        "remove_admins": ["<school_admin1_username>"],
+        "admins":["<school_admin3_username>"]
+    }
+    ```
+  - Sample Response: Updated school details.
+    ```json
+    {
+        "id": <school_id>,
+        "name": "<school_name>",
+        "head": "<head_username>",
+        "admins": ["<new_head_username>", "<school_admin2_username>", "<school_admin3_username>", "created_by_username"],
+        "created_by": "<created_by_username>",
+        "institution": "<institution_name>"
+    }
+    ```
+  - **Response when not authorized:**
+    ```json
+    {
+        "error": "You are not authorized to update this school. Only school-level admins can update."
+    }
+
+- **Delete School**: Delete a school by its name.
+  - Method: DELETE
+  - URL: `http://localhost:8000/institutions/school/delete_school/?name=<school_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Response: Message indicating successful deletion.
+  - **Response when not authorized:**
+    ```json
+    {
+        "error": "You are not authorized to DELETE this school. Only school-level admins can DELETE."
+    }
+    ```
+
+
 
 
 ## Notes App
