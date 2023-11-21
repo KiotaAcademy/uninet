@@ -31,7 +31,11 @@ class DepartmentSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
     secretary = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
     admins = GenericRelatedField(queryset=User.objects.all(), field="username", required=False, many=True)
-    school = GenericRelatedField(queryset=School.objects.all(), field="name", required=False)
+    school = serializers.StringRelatedField(source='school.name', read_only=True)
+
+    # Use the following line only if you intend to provide the school in the request.
+    # The 'school' field is automatically filled based on the institution the user is an admin of.
+    # school = GenericRelatedField(queryset=School.objects.all(), field="name", required=False)
 
     def create(self, validated_data):
         default_admins = ['head', 'secretary', 'created_by']
@@ -48,6 +52,17 @@ class DepartmentSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
         # If the user is not a school level admin, raise a validation error
         raise ValidationError("You are not a school level admin in any school. Only school level admins can create departments within a school.")
 
+    def update(self, instance, validated_data):
+        default_admin_fields = ['head', 'secretary'] # exclude created_by as its admin status should not be updated 
+        instance = self.update_admins_for_instance(instance, validated_data, default_admin_fields)
+
+        # Update the instance with the remaining validated data
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
+    
 
 class SchoolSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
     class Meta:

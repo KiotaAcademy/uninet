@@ -25,7 +25,7 @@ class InstitutionViewSet(ObjectViewMixin, viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])
     def retrieve_institution(self, request):
         institution = self.lookup_object(request, self.queryset)
-        serializer = self.get_serializer(institution)
+        serializer = self.get_serializer(institution, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=['PUT'])
@@ -110,7 +110,7 @@ class SchoolViewSet(ObjectViewMixin, viewsets.ModelViewSet):
         school.delete()
         return Response({'message': 'School deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
-class DepartmentViewSet(viewsets.ModelViewSet):
+class DepartmentViewSet(ObjectViewMixin, viewsets.ModelViewSet):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
 
@@ -119,6 +119,52 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+    @action(detail=False, methods=['GET'])
+    def retrieve_department(self, request):
+        institution_name = request.query_params.get('institution', None)
+        if institution_name:
+            department = self.lookup_object(request, self.queryset, filters={'school__institution__name': institution_name})
+            serializer = self.get_serializer(department)
+        else:
+            departments = self.lookup_object(request, self.queryset)
+            serializer = self.get_serializer(departments, many=True)
+        return Response(serializer.data)
+
+
+    @action(detail=False, methods=['PUT'])
+    def update_department(self, request):
+        institution_name = request.query_params.get('institution', None)
+        if not institution_name:
+            return Response({'error': 'You must provide the institution in the query parameters of the request'}, status=status.HTTP_400_BAD_REQUEST)
+
+        department = self.lookup_object(request, self.queryset, filters={'school__institution__name': institution_name})
+        authorized = self.check_authorization(department, request.user)
+
+        if not authorized:
+            return Response({'error': 'You are not authorized to update this school. Only school-level admins can update.'}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = self.get_serializer(department, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['DELETE'])
+    def delete_department(self, request):
+        institution_name = request.query_params.get('institution', None)
+        if not institution_name:
+            return Response({'error': 'You must provide the institution in the query parameters of the request'}, status=status.HTTP_400_BAD_REQUEST)
+
+        department = self.lookup_object(request, self.queryset, filters={'school__institution__name': institution_name})
+        authorized = self.check_authorization(department, request.user)
+
+        if not authorized:
+            return Response({'error': 'You are not authorized to DELETE this department. Only department-level admins can DELETE.'}, status=status.HTTP_403_FORBIDDEN)
+
+        department.delete()
+        return Response({'message': 'Department deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
