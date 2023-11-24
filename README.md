@@ -337,6 +337,91 @@ The following API endpoints are available:
     }
     ```
 
+### Department
+
+- **Create Department**: Create a new department.
+  - Method: POST
+  - URL: `http://localhost:8000/institutions/department/`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Request Data Example:
+    ```json
+    {
+        "name": "<department_name>",
+        "admins": ["<department_admin1_username>"]
+    }
+    ```
+  - Sample Response:
+    ```json
+    {
+        "id": <department_id>,
+        "courses": [],
+        "lecturers": [],
+        "head": null,
+        "secretary": null,
+        "created_by": "<created_by_username>",
+        "admins": ["<created_by_username>", "<department_admin1_username>"],
+        "school": "<school_name>",
+        "name": "<department_name>"
+    }
+    ```
+  - Note: The 'school' field is automatically filled based on the institution the user is an admin of.
+
+- **Get Department by Name**: Retrieve a department by its name.
+  - Method: GET
+  - URL: `http://localhost:8000/institutions/department/retrieve_department/?name=<department_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+
+- **Update Department by Name**: Update a department by its name.
+  - Method: PUT
+  - URL: `http://localhost:8000/institutions/department/update_department/?name=<department_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Sample Request Data:
+    ```json
+    {
+        "head": "<new_head_username>",
+        "remove_admins": ["<department_admin1_username>"],
+        "admins": ["<department_admin3_username>"]
+    }
+    ```
+  - Sample Response: Updated department details.
+    ```json
+    {
+        "id": <department_id>,
+        "courses": [],
+        "lecturers": [],
+        "head": "<new_head_username>",
+        "secretary": null,
+        "created_by": "<created_by_username>",
+        "admins": ["<created_by_username>", "<department_admin2_username>", "<department_admin3_username>"],
+        "school": "<school_name>",
+        "name": "<department_name>"
+    }
+    ```
+  - Response when not authorized:
+    ```json
+    {
+        "error": "You are not authorized to update this department. Only department-level admins can update."
+    }
+
+- **Delete Department by Name**: Delete a department by its name.
+  - Method: DELETE
+  - URL: `http://localhost:8000/institutions/department/delete_department/?name=<department_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Sample Response: Message indicating successful deletion.
+  - Response when not authorized:
+    ```json
+    {
+        "error": "You are not authorized to DELETE this department. Only department-level admins can DELETE."
+    }
 
 
 
