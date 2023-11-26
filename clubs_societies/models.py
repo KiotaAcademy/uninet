@@ -2,10 +2,11 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 from institutions.models import Institution
+from base.shared_across_apps.mixins import AdminsModelMixin
 
 User = get_user_model()
 
-class ClubSociety(models.Model):
+class ClubSociety(AdminsModelMixin, models.Model):
     name = models.CharField(max_length=200)
     institution = models.ForeignKey(Institution, on_delete=models.SET_NULL, null=True)
     
