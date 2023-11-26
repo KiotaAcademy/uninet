@@ -424,6 +424,109 @@ The following API endpoints are available:
     }
 
 
+## Clubs and Societies App
+### ClubSociety
+
+- **Create Club/Society**: Create a new club or society.
+  - Method: POST
+  - URL: `http://localhost:8000/clubs_societies/clubsociety/`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Request Data Example:
+    ```json
+    {
+        "name": "<club_name>",
+        "institution": "<institution_name>",
+        "admins": ["<admin1_username>", "<admin2_username>"]
+    }
+    ```
+  - Sample Response:
+    ```json
+    {
+        "id": <club_id>,
+        "institution": "<institution_name>",
+        "members": ["<admin1_username>", "<admin2_username>", "<created_by_username>"],
+        "created_by": "<created_by_username>",
+        "admins": ["<admin1_username>", "<admin2_username>"],
+        "name": "<club_name>",
+        "avatar": null,
+        "bio": "",
+        "location": "",
+        "contact_number": "",
+        "website": "",
+        "facebook": "",
+        "twitter": "",
+        "instagram": "",
+        "tiktok": "",
+        "linkedin": "",
+        "youtube": ""
+    }
+    ```
+
+- **Get Club/Society by Name**: Retrieve a club or society by its name.
+  - Method: GET
+  - URL: `http://localhost:8000/clubs_societies/clubsociety/retrieve_club/?name=<club_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+
+- **Update Club/Society by Name**: Update a club or society by its name.
+  - Method: PUT
+  - URL: `http://localhost:8000/clubs_societies/clubsociety/update_club/?name=<club_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Sample Request Data:
+    ```json
+    {
+        "remove_members": ["<admin1_username>"]
+    }
+    ```
+  - Sample Response:
+    ```json
+    {
+        "id": <club_id>,
+        "institution": "<institution_name>",
+        "members": ["<admin2_username>", "<created_by_username>"],
+        "created_by": "<created_by_username>",
+        "admins": ["<admin2_username>"],
+        "name": "<club_name>",
+        "avatar": null,
+        "bio": "",
+        "location": "",
+        "contact_number": "",
+        "website": "",
+        "facebook": "",
+        "twitter": "",
+        "instagram": "",
+        "tiktok": "",
+        "linkedin": "",
+        "youtube": ""
+    }
+    ```
+  - When a member is rempved, their admin status is revoked,
+  - The user whocreates the club cannot be removed.
+  - To revoke admin status without removing the members, use:
+     ```json
+    {
+        "remove_admins": ["<admin1_username>"]
+    }
+    ```
+
+
+- **Delete Club/Society by Name**: Delete a club or society by its name.
+  - Method: DELETE
+  - URL: `http://localhost:8000/clubs_societies/clubsociety/delete_club/?name=<club_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+
+
 
 ## Notes App
 
