@@ -239,7 +239,7 @@ The following API endpoints are available:
             "created_by": "<created_by_username>",
             "institution": "<institution_name_2>"
         },
-        ...
+        
     ]
     ```
 
@@ -285,7 +285,7 @@ The following API endpoints are available:
             "created_by": "<created_by_username>",
             "institution": "<institution_name_2>"
         },
-        ...
+        
     ]
     ```
 
