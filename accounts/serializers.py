@@ -6,6 +6,8 @@ from django.core.exceptions import ValidationError
 from accounts.models import CustomUser as User
 from accounts.models import UserProfile
 
+from institutions.models import Institution, School, Department
+
 
 class UserSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True, required=True)
@@ -69,4 +71,34 @@ class UserSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['avatar', 'bio', 'location', 'contact_number', 'website', 'facebook', 'twitter', 'instagram', 'tiktok', 'linkedin', 'youtube']
+        fields = ['avatar', 'bio', 'location', 'contact_number', 'website', 'facebook', 'twitter', 'instagram', 'tiktok', 'linkedin', 'youtube', 'admin_info']
+
+    admin_info = serializers.SerializerMethodField()
+
+    def get_admin_info(self, obj):
+        user = obj.user
+        admin_info = {}
+
+        admin_types = {
+            'institutions': (Institution, 'institution_level'),
+            'schools': (School, 'school_level'),
+            'departments': (Department, 'department_level'),
+        }
+
+        for admin_type, (model, key) in admin_types.items():
+            entities = model.objects.filter(admins=user)
+            if entities.exists():
+                admin_info[key] = []
+
+                for entity in entities:
+                    entity_info = {'name': entity.name}
+
+                    if key == 'schools':
+                        entity_info['institution'] = entity.institution.name
+                    elif key == 'departments':
+                        entity_info['school'] = entity.school.name
+                        entity_info['institution'] = entity.school.institution.name
+
+                    admin_info[key].append(entity_info)
+
+        return admin_info

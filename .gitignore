@@ -13,4 +13,16 @@
 /notes/documents/
 
 
-/students/
+/students/migrations/
+/students/__pycache__/
+
+/institutions/migrations/
+/institutions/__pycache__/
+
+
+/lecturers/migrations/
+/lecturers/__pycache__/
+
+
+/clubs_societies/migrations/
+/clubs_societies/__pycache__/

@@ -39,6 +39,495 @@ The following API endpoints are available:
   - URL: `http://localhost:8000/accounts/delete/`
   - Requires authentication: Yes
 
+
+
+
+## Institutions App
+
+### Institution
+- **Create Institution**: Create a new institution.
+  - Method: POST
+  - URL: `http://localhost:8000/institutions/institution/`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Request Data Example:
+    ```json
+    {
+        "category": "university",
+        "name": "<institution_name>"
+    }
+    ```
+  - Sample Response:
+    ```json
+    {
+        "id": 73,
+        "chancellor": "<chancellor_username>",
+        "vice_chancellor": null,
+        "admins": ["<chancellor_username>", "<created_by_username>", "<admin1_username>", "<admin2_username>"],
+        "created_by": "<created_by_username>",
+        "category": "university",
+        "name": "<institution_name>"
+    }
+    ```
+  - `Note:` chancellor, vice_chancellor and created_by are always added by default to the admins list. Their admin status cannot be changed unless new users are provided in their place. i.e. If chancellor is changed to a different user. 
+    
+
+
+- **Get Institution by Name**: Retrieve an institution by its name.
+  - Method: GET
+  - URL: `http://localhost:8000/institutions/institution/retrieve_institution/?name=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Response:
+    ```json
+    {
+        "id": 73,
+        "chancellor": "<chancellor_username>",
+        "vice_chancellor": null,
+        "admins": ["<chancellor_username>", "<created_by_username>", "<admin1_username>", "<admin2_username>"],
+        "created_by": "<created_by_username>",
+        "category": "university",
+        "name": "<institution_name>"
+    }
+    ```
+
+- **Get Institution by ID**: Retrieve an institution by its ID.
+  - Method: GET
+  - URL: `http://localhost:8000/institutions/institution/retrieve_institution/?id=33`
+  - OR
+  - URL: `http://localhost:8000/institutions/institution/32/`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Response:
+    ```json
+    {
+        "id": 73,
+        "chancellor": "<chancellor_username>",
+        "vice_chancellor": null,
+        "admins": ["<chancellor_username>", "<created_by_username>", "<admin1_username>", "<admin2_username>"],
+        "created_by": "<created_by_username>",
+        "category": "university",
+        "name": "<institution_name>"
+    }
+    ```
+
+- **Update Institution**: Update an institution by its name.
+  - Method: PUT
+  - URL: `http://localhost:8000/institutions/institution/update_institution/?name=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Request Data:
+    ```json
+    {
+        "chancellor": "<new_chancellor_username>",
+        "remove_admins": ["<admin1_username>"]
+    }
+    ```
+  - Sample Response: Updated institution details.
+    ```json
+    {
+        "id": 73,
+        "chancellor": "<new_chancellor_username>",
+        "vice_chancellor": null,
+        "admins": ["<chancellor_username>", "<created_by_username>", "<admin2_username>"],
+        "created_by": "<created_by_username>",
+        "category": "university",
+        "name": "<institution_name>"
+    }
+    ```
+  - **Response when not authorized:**
+  ```json
+  {
+      "error": "You are not authorized to update this institution. Only institution-level admins can update."
+  }
+
+
+- **Delete Institution**: Delete an institution by its name.
+  - Method: DELETE
+  - URL: `http://localhost:8000/institutions/institution/delete_institution/?name=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Response: Message indicating successful deletion.
+  - **Response when not authorized:**
+ ```json
+ {
+    "error": "You are not authorized to DELETE this institution. Only institution-level admins can DELETE."
+}
+```
+
+
+
+### School
+
+- **Create School**: Create a new school.
+  - Method: POST
+  - URL: `http://localhost:8000/institutions/school/`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Request Data Example:
+    ```json
+    {
+        "name": "<school_name>",
+        "head": "<head_username>",
+        "admins": ["<school_admin1_username>", "<school_admin2_username>"]
+    }
+    ```
+  - Sample Response:
+    ```json
+    {
+        "id": <school_id>,
+        "name": "<school_name>",
+        "head": "<head_username>",
+        "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+        "created_by": "<created_by_username>",
+        "institution": "<institution_name>"
+    }
+    ```
+  - `Note:` The institution is automatically set based on the institution the user is an admin. If not an institution leve admin in any institution, the user can't create schools.
+
+- **Get School by Name**: Retrieve a school by its name.
+  - Method: GET
+  - URL: `http://localhost:8000/institutions/school/retrieve_school/?name=<school_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Response:
+    ```json
+    {
+        "id": <school_id>,
+        "name": "<school_name>",
+        "head": "<head_username>",
+        "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+        "created_by": "<created_by_username>",
+        "institution": "<institution_name>"
+    }
+    ```
+  - **Response when no parameters provided:**
+    ```json
+    {
+        "error": "You must provide either the 'id' or 'name' parameter for the lookup."
+    }
+  - **Response when no institution provided:All schools with that nam are returned**
+    ```json
+    [
+        {
+            "id": <school_id_1>,
+            "name": "<school_name>",
+            "head": "<head_username>",
+            "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+            "created_by": "<created_by_username>",
+            "institution": "<institution_name_1>"
+        },
+        {
+            "id": <school_id_2>,
+            "name": "<school_name>",
+            "head": "<head_username>",
+            "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+            "created_by": "<created_by_username>",
+            "institution": "<institution_name_2>"
+        },
+        
+    ]
+    ```
+
+**Get School by ID**: Retrieve a school by its ID.
+  - Method: GET
+  - URL: `http://localhost:8000/institutions/school/retrieve_school/?id=<school_id>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Response:
+    ```json
+    {
+        "id": <school_id>,
+        "name": "<school_name>",
+        "head": "<head_username>",
+        "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+        "created_by": "<created_by_username>",
+        "institution": "<institution_name>"
+    }
+    ```
+  - **Response when no parameters provided:**
+    ```json
+    {
+        "error": "You must provide either the 'id' or 'name' parameter for the lookup."
+    }
+  - **Response when no institution provided: All schools with that nam are returned**
+    ```json
+    [
+        {
+            "id": <school_id_1>,
+            "name": "<school_name>",
+            "head": "<head_username>",
+            "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+            "created_by": "<created_by_username>",
+            "institution": "<institution_name_1>"
+        },
+        {
+            "id": <school_id_2>,
+            "name": "<school_name>",
+            "head": "<head_username>",
+            "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
+            "created_by": "<created_by_username>",
+            "institution": "<institution_name_2>"
+        },
+        
+    ]
+    ```
+
+
+- **Update School**: Update a school by its name.
+  - Method: PUT
+  - URL: `http://localhost:8000/institutions/school/update_school/?name=<school_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Request Data:
+    ```json
+    {
+        "head": "<new_head_username>",
+        "remove_admins": ["<school_admin1_username>"],
+        "admins":["<school_admin3_username>"]
+    }
+    ```
+  - Sample Response: Updated school details.
+    ```json
+    {
+        "id": <school_id>,
+        "name": "<school_name>",
+        "head": "<head_username>",
+        "admins": ["<new_head_username>", "<school_admin2_username>", "<school_admin3_username>", "created_by_username"],
+        "created_by": "<created_by_username>",
+        "institution": "<institution_name>"
+    }
+    ```
+  - **Response when not authorized:**
+    ```json
+    {
+        "error": "You are not authorized to update this school. Only school-level admins can update."
+    }
+
+- **Delete School**: Delete a school by its name.
+  - Method: DELETE
+  - URL: `http://localhost:8000/institutions/school/delete_school/?name=<school_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token <your_auth_token>
+  - Sample Response: Message indicating successful deletion.
+  - **Response when not authorized:**
+    ```json
+    {
+        "error": "You are not authorized to DELETE this school. Only school-level admins can DELETE."
+    }
+    ```
+
+### Department
+
+- **Create Department**: Create a new department.
+  - Method: POST
+  - URL: `http://localhost:8000/institutions/department/`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Request Data Example:
+    ```json
+    {
+        "name": "<department_name>",
+        "admins": ["<department_admin1_username>"]
+    }
+    ```
+  - Sample Response:
+    ```json
+    {
+        "id": <department_id>,
+        "courses": [],
+        "lecturers": [],
+        "head": null,
+        "secretary": null,
+        "created_by": "<created_by_username>",
+        "admins": ["<created_by_username>", "<department_admin1_username>"],
+        "school": "<school_name>",
+        "name": "<department_name>"
+    }
+    ```
+  - Note: The 'school' field is automatically filled based on the institution the user is an admin of.
+
+- **Get Department by Name**: Retrieve a department by its name.
+  - Method: GET
+  - URL: `http://localhost:8000/institutions/department/retrieve_department/?name=<department_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+
+- **Update Department by Name**: Update a department by its name.
+  - Method: PUT
+  - URL: `http://localhost:8000/institutions/department/update_department/?name=<department_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Sample Request Data:
+    ```json
+    {
+        "head": "<new_head_username>",
+        "remove_admins": ["<department_admin1_username>"],
+        "admins": ["<department_admin3_username>"]
+    }
+    ```
+  - Sample Response: Updated department details.
+    ```json
+    {
+        "id": <department_id>,
+        "courses": [],
+        "lecturers": [],
+        "head": "<new_head_username>",
+        "secretary": null,
+        "created_by": "<created_by_username>",
+        "admins": ["<created_by_username>", "<department_admin2_username>", "<department_admin3_username>"],
+        "school": "<school_name>",
+        "name": "<department_name>"
+    }
+    ```
+  - Response when not authorized:
+    ```json
+    {
+        "error": "You are not authorized to update this department. Only department-level admins can update."
+    }
+
+- **Delete Department by Name**: Delete a department by its name.
+  - Method: DELETE
+  - URL: `http://localhost:8000/institutions/department/delete_department/?name=<department_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Sample Response: Message indicating successful deletion.
+  - Response when not authorized:
+    ```json
+    {
+        "error": "You are not authorized to DELETE this department. Only department-level admins can DELETE."
+    }
+
+
+## Clubs and Societies App
+### ClubSociety
+
+- **Create Club/Society**: Create a new club or society.
+  - Method: POST
+  - URL: `http://localhost:8000/clubs_societies/clubsociety/`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Request Data Example:
+    ```json
+    {
+        "name": "<club_name>",
+        "institution": "<institution_name>",
+        "admins": ["<admin1_username>", "<admin2_username>"]
+    }
+    ```
+  - Sample Response:
+    ```json
+    {
+        "id": <club_id>,
+        "institution": "<institution_name>",
+        "members": ["<admin1_username>", "<admin2_username>", "<created_by_username>"],
+        "created_by": "<created_by_username>",
+        "admins": ["<admin1_username>", "<admin2_username>"],
+        "name": "<club_name>",
+        "avatar": null,
+        "bio": "",
+        "location": "",
+        "contact_number": "",
+        "website": "",
+        "facebook": "",
+        "twitter": "",
+        "instagram": "",
+        "tiktok": "",
+        "linkedin": "",
+        "youtube": ""
+    }
+    ```
+
+- **Get Club/Society by Name**: Retrieve a club or society by its name.
+  - Method: GET
+  - URL: `http://localhost:8000/clubs_societies/clubsociety/retrieve_club/?name=<club_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+
+- **Update Club/Society by Name**: Update a club or society by its name.
+  - Method: PUT
+  - URL: `http://localhost:8000/clubs_societies/clubsociety/update_club/?name=<club_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Sample Request Data:
+    ```json
+    {
+        "remove_members": ["<admin1_username>"]
+    }
+    ```
+  - Sample Response:
+    ```json
+    {
+        "id": <club_id>,
+        "institution": "<institution_name>",
+        "members": ["<admin2_username>", "<created_by_username>"],
+        "created_by": "<created_by_username>",
+        "admins": ["<admin2_username>"],
+        "name": "<club_name>",
+        "avatar": null,
+        "bio": "",
+        "location": "",
+        "contact_number": "",
+        "website": "",
+        "facebook": "",
+        "twitter": "",
+        "instagram": "",
+        "tiktok": "",
+        "linkedin": "",
+        "youtube": ""
+    }
+    ```
+  - When a member is rempved, their admin status is revoked,
+  - The user whocreates the club cannot be removed.
+  - To revoke admin status without removing the members, use:
+     ```json
+    {
+        "remove_admins": ["<admin1_username>"]
+    }
+    ```
+
+
+- **Delete Club/Society by Name**: Delete a club or society by its name.
+  - Method: DELETE
+  - URL: `http://localhost:8000/clubs_societies/clubsociety/delete_club/?name=<club_name>&institution=<institution_name>`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+
+
+
 ## Notes App
 
 ### Categories
