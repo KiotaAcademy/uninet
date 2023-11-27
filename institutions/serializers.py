@@ -3,9 +3,13 @@ from rest_framework.exceptions import ValidationError
 
 from .models import Institution, School, Department, Course, Unit
 from lecturers.serializers import LecturerSerializer
+from clubs_societies.serializers import ClubSocietySerializer
+from clubs_societies.models import ClubSociety
+
 from base.shared_across_apps.serializers import GenericRelatedField
 from base.shared_across_apps.mixins import AdminsSerializerMixin
 
+from django.db.models import Prefetch
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -113,8 +117,7 @@ class InstitutionSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = Institution
         fields = '__all__'
-    
-    # schools = SchoolSerializer(many=True, read_only=True)  # Include related schools
+        
     chancellor = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     vice_chancellor = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     admins = GenericRelatedField(queryset=User.objects.all(), field="username", required=False, many=True)
@@ -137,5 +140,16 @@ class InstitutionSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
 
         instance.save()
         return instance
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # Use prefetch_related to efficiently retrieve related clubs and societies along with their members and admins
+        clubs_societies = ClubSociety.objects.filter(institution=instance)
+        clubs_societies = clubs_societies.prefetch_related('members', 'admins')
+        club_society_serializer = ClubSocietySerializer(clubs_societies, many=True)
+        representation['clubs_societies'] = club_society_serializer.data
+
+        return representation
 
 
