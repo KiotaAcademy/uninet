@@ -30,12 +30,12 @@ class DepartmentSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
         fields = '__all__'
 
     courses = CourseSerializer(many=True, read_only=True)
-    lecturers = LecturerSerializer(many=True, read_only=True)
     head = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     secretary = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
     admins = GenericRelatedField(queryset=User.objects.all(), field="username", required=False, many=True)
     school = serializers.StringRelatedField(source='school.name', read_only=True)
+    institution = serializers.StringRelatedField(source='school.institution.name', read_only=True)
 
     # Use the following line only if you intend to provide the school in the request.
     # The 'school' field is automatically filled based on the institution the user is an admin of.
@@ -66,6 +66,15 @@ class DepartmentSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
 
         instance.save()
         return instance
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # Include the serialized representation of lecturers
+        lecturers = LecturerSerializer(instance.lecturers.all(), many=True).data
+        representation['lecturers'] = lecturers
+
+        return representation
     
 
 class SchoolSerializer(AdminsSerializerMixin, serializers.ModelSerializer):

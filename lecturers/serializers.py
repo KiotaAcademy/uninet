@@ -38,10 +38,14 @@ class LecturerSerializer(serializers.ModelSerializer):
     departments = GenericRelatedField(queryset=Department.objects.none(), field="name", many=True)
     
     def get_departments_queryset(self):
+        request = self.context.get('request', None)
+        if not request: # can happen when the lecturer serializer is used within other serializers eg institutions/serializers.py/DepartmentSerializer
+            return Department.objects.none()
+
         institution_name = self.context['request'].data['institution']
         q = Department.objects.filter(school__institution__name__iexact=institution_name)
         return q
-    
+
     def get_fields(self):
         fields = super().get_fields()
         q = self.get_departments_queryset() 
