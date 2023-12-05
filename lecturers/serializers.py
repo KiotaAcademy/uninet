@@ -36,18 +36,38 @@ class LecturerSerializer(serializers.ModelSerializer):
 
     # initially set the queryset to None. the queryset will be updated dynamically based on the institution
     departments = GenericRelatedField(queryset=Department.objects.none(), field="name", many=True)
-    
+    remove_departments = GenericRelatedField(queryset=Department.objects.none(), field="name", many=True, required=False)
+
     def get_departments_queryset(self):
+        # check if there is a request
         request = self.context.get('request', None)
         if not request: # can happen when the lecturer serializer is used within other serializers eg institutions/serializers.py/DepartmentSerializer
             return Department.objects.none()
-
-        institution_name = self.context['request'].data['institution']
-        q = Department.objects.filter(school__institution__name__iexact=institution_name)
-        return q
+        # if there is a request
+        # Check if institution is present in the query parameters
+        institution_name = request.data.get('institution', None)
+        if institution_name:
+            q = Department.objects.filter(school__institution__name__iexact=institution_name)
+            return q
+        else: # get request
+            return Department.objects.none()
 
     def get_fields(self):
         fields = super().get_fields()
         q = self.get_departments_queryset() 
         fields['departments'] = GenericRelatedField(queryset=q, field="name", many=True)
+        fields['remove_departments'] = GenericRelatedField(queryset=q, field="name", many=True, required=False)
         return fields
+    
+    def update(self, instance, validated_data):
+        # Handle removal of departments
+        remove_departments = set(validated_data.pop('remove_departments', []))
+        instance.departments.remove(*remove_departments)
+
+        # Handle addition of departments
+        new_departments = set(validated_data.pop('departments', []))
+        instance.departments.add(*new_departments)
+
+        instance.save()
+
+        return instance
