@@ -59,4 +59,13 @@ class LecturerViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['DELETE'])
+    def delete_lecturer(self, request):
+        # Ensure that the user can only delete their own lecturer instance
+        lecturer = Lecturer.objects.filter(user=request.user).first()
+        if not lecturer:
+            raise Http404("Lecturer not found.")
         
+        lecturer.delete()
+        return Response({"detail": "Lecturer deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
