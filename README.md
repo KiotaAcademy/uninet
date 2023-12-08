@@ -526,6 +526,120 @@ The following API endpoints are available:
     - Key: Authorization
     - Value: Token `<your_auth_token>`
 
+## Lecturers App
+### Lecturer
+#### Create Lecturer
+- Method: POST
+- URL: `http://localhost:8000/lecturers/lecturer/`
+- Requires authentication: Yes (Token should be provided in the header)
+- Request Data Example:
+    ```json
+    {
+        "institution": "<institution_name>",
+        "departments": ["<department1_name>"]
+    }
+    ```
+- Sample Response: The response data contains lecturer status information along with profile information of the user. 
+    ```json
+    {
+        "id": <lecturer_id>,
+        "user": "<username>",
+        "profile": {
+            "avatar": null,
+            "bio": "bio for <username>",
+            "location": "",
+            "contact_number": "",
+            "website": "",
+            "facebook": "",
+            "twitter": "",
+            "instagram": "",
+            "tiktok": "",
+            "linkedin": "",
+            "youtube": "",
+            
+        },
+        "institution": "<institution_name>",
+        "departments": [
+            "<department1_name>"
+        ]
+    }
+    ```
+
+#### Get Lecturer by Username
+- Method: GET
+- URL: `http://localhost:8000/lecturers/lecturer/retrieve_lecturer/?username=<username>`
+- Requires authentication: Yes (Token should be provided in the header)
+- Sample Response:
+    ```json
+    {
+        "id": <lecturer_id>,
+        "user": "<username>",
+        "profile": {
+            "avatar": null,
+            "bio": "bio for <username>",
+            "location": "",
+            "contact_number": "",
+            "website": "",
+            "facebook": "",
+            "twitter": "",
+            "instagram": "",
+            "tiktok": "",
+            "linkedin": "",
+            "youtube": ""
+        },
+        "institution": "<institution_name>",
+        "departments": [
+            "<department1_name>"
+        ]
+    }
+    ```
+
+#### Update Lecturer
+- Method: PUT
+- URL: `http://localhost:8000/lecturers/lecturer/update_lecturer/`
+- Requires authentication: Yes (Token should be provided in the header)
+- Request Data Example:
+    ```json
+    {
+        "remove_departments": ["<department1_name>"],
+        "departments": ["<department2_name>"]
+    }
+    ```
+- Sample Response: The response data contains lecturer status information along with profile information of the user.
+    ```json
+    {
+        "id": <lecturer_id>,
+        "user": "<username>",
+        "profile": {
+            "avatar": null,
+            "bio": "bio for <username>",
+            "location": "",
+            "contact_number": "",
+            "website": "",
+            "facebook": "",
+            "twitter": "",
+            "instagram": "",
+            "tiktok": "",
+            "linkedin": "",
+            "youtube": ""
+        },
+        "institution": "<institution_name>",
+        "departments": [
+            "<department2_name>"
+        ]
+    }
+    ```
+- `NOTE:` Only the user in the request can update their lecturer status.
+
+#### Delete Lecturer
+- Method: DELETE
+- URL: `http://localhost:8000/lecturers/lecturer/delete_lecturer/`
+- Requires authentication: Yes (Token should be provided in the header)
+- `NOTE:` Only the user in the request can delete their lecturer status. This does not delete the user, only their status as a lecturer.
+  
+
+
+
 
 
 ## Notes App

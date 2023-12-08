@@ -3,6 +3,7 @@
 
 /base/__pycache__/
 /base/.env
+/base/shared_across_apps/__pycache__/
 
 /db.sqlite3
 

@@ -3,9 +3,13 @@ from rest_framework.exceptions import ValidationError
 
 from .models import Institution, School, Department, Course, Unit
 from lecturers.serializers import LecturerSerializer
+from clubs_societies.serializers import ClubSocietySerializer
+from clubs_societies.models import ClubSociety
+
 from base.shared_across_apps.serializers import GenericRelatedField
 from base.shared_across_apps.mixins import AdminsSerializerMixin
 
+from django.db.models import Prefetch
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -26,12 +30,12 @@ class DepartmentSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
         fields = '__all__'
 
     courses = CourseSerializer(many=True, read_only=True)
-    lecturers = LecturerSerializer(many=True, read_only=True)
     head = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     secretary = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
     admins = GenericRelatedField(queryset=User.objects.all(), field="username", required=False, many=True)
     school = serializers.StringRelatedField(source='school.name', read_only=True)
+    institution = serializers.StringRelatedField(source='school.institution.name', read_only=True)
 
     # Use the following line only if you intend to provide the school in the request.
     # The 'school' field is automatically filled based on the institution the user is an admin of.
@@ -62,6 +66,15 @@ class DepartmentSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
 
         instance.save()
         return instance
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # Include the serialized representation of lecturers
+        lecturers = LecturerSerializer(instance.lecturers.all(), many=True).data
+        representation['lecturers'] = lecturers
+
+        return representation
     
 
 class SchoolSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
@@ -113,8 +126,7 @@ class InstitutionSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = Institution
         fields = '__all__'
-    
-    # schools = SchoolSerializer(many=True, read_only=True)  # Include related schools
+        
     chancellor = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     vice_chancellor = GenericRelatedField(queryset=User.objects.all(), field="username", required=False)
     admins = GenericRelatedField(queryset=User.objects.all(), field="username", required=False, many=True)
@@ -137,5 +149,16 @@ class InstitutionSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
 
         instance.save()
         return instance
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # Use prefetch_related to efficiently retrieve related clubs and societies along with their members and admins
+        clubs_societies = ClubSociety.objects.filter(institution=instance)
+        clubs_societies = clubs_societies.prefetch_related('members', 'admins')
+        club_society_serializer = ClubSocietySerializer(clubs_societies, many=True)
+        representation['clubs_societies'] = club_society_serializer.data
+
+        return representation
 
 
