@@ -22,8 +22,25 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
-    department_name = serializers.ReadOnlyField(source='department.name')
+    created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
+    department = serializers.StringRelatedField(source='department.name', read_only=True)
+    school = serializers.StringRelatedField(source='department.school.name', read_only=True)
+    institution = serializers.StringRelatedField(source='department.school.institution.name', read_only=True)
 
+    def create(self, validated_data):
+        # logic to check if the user is a department level admin
+        user = self.context['request'].user
+        departments = Department.objects.filter(admins=user)
+
+        if departments.exists():
+            department = departments.first()
+            validated_data['department'] = department
+            instance = super().create(validated_data)
+            return instance
+
+        # If the user is not a department level admin, raise a validation error
+        raise ValidationError("You are not a department level admin in any department. Only department level admins can create courses within a department.")
+    
 class DepartmentSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = Department
