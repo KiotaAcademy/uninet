@@ -50,11 +50,9 @@ class LecturerViewSet(viewsets.ModelViewSet):
     def update_lecturer(self, request):
         # Ensure that the user can only update their own lecturer instance
         lecturer = Lecturer.objects.filter(user=request.user).first()
-        print(f'lecturer: {lecturer}')
         if not lecturer:
             raise Http404("Lecturer not found.")
         request.data['institution'] = lecturer.institution.name
-        print(f'request data: {request.data}')
         serializer = self.get_serializer(lecturer, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
