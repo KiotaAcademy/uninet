@@ -17,6 +17,38 @@ class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Unit
         fields = '__all__'
+    
+    course = GenericRelatedField(queryset=Course.objects.none(), field="name", required=True)
+    created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
+    department = serializers.StringRelatedField(source='course.department.name', read_only=True)
+    school = serializers.StringRelatedField(source='course.department.school.name', read_only=True)
+    institution = serializers.StringRelatedField(source='course.department.school.institution.name', read_only=True)
+
+    def get_course_queryset(self):
+        # Check if there is a request
+        request = self.context.get('request', None)
+        if not request or request.method=='GET':  # Can happen when the unit serializer is used within other serializers, e.g., institutions/serializers.py/DepartmentSerializer
+            return Course.objects.none()
+        
+        # If there is a request, check if the user is a department level admin
+        user = request.user
+        departments = Department.objects.filter(admins=user)
+
+        if departments.exists():
+            department = departments.first()
+            q = Course.objects.filter(department=department)
+            return q
+
+        # If the user is not a department level admin, raise a validation error
+        raise ValidationError("You are not a department level admin in any department. Only department level admins can create, update or delete units within a department.")
+
+    def get_fields(self):
+        fields = super().get_fields()
+        q = self.get_course_queryset()
+        fields['course'] = GenericRelatedField(queryset=q, field="name", required=True)
+        return fields
+    
+    
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
