@@ -1,89 +1,148 @@
+# Table of Contents
+- [Table of Contents](#table-of-contents)
+- [UjuziHub API Endpoints](#ujuzihub-api-endpoints)
+  - [Accounts App](#accounts-app)
+    - [CustomUser](#customuser)
+      - [User Registration](#user-registration)
+      - [Verify Email](#verify-email)
+      - [User Login](#user-login)
+      - [User Logout](#user-logout)
+    - [UserProfile](#userprofile)
+      - [Get User Profile](#get-user-profile)
+      - [Update User Profile](#update-user-profile)
+      - [Delete User](#delete-user)
+  - [Institutions App](#institutions-app)
+    - [Institution](#institution)
+      - [Create Institution](#create-institution)
+      - [Get Institution](#get-institution)
+      - [Update Institution](#update-institution)
+    - [School](#school)
+      - [Create School](#create-school)
+      - [Get School](#get-school)
+      - [Update School](#update-school)
+      - [Delete School](#delete-school)
+    - [Department](#department)
+      - [Create Department](#create-department)
+      - [Get Department](#get-department)
+      - [Update Department](#update-department)
+      - [Delete Department](#delete-department)
+    - [Course](#course)
+      - [Create Course](#create-course)
+      - [Get Course](#get-course)
+      - [Update Course](#update-course)
+      - [Delete Course](#delete-course)
+    - [Unit](#unit)
+      - [Create Unit](#create-unit)
+      - [Get Unit](#get-unit)
+      - [Update Unit](#update-unit)
+      - [Delete Unit](#delete-unit)
+  - [Clubs and Societies App](#clubs-and-societies-app)
+    - [ClubSociety](#clubsociety)
+      - [Create Club/Society](#create-clubsociety)
+      - [Get Club/Society](#get-clubsociety)
+      - [Update Club/Society](#update-clubsociety)
+      - [Delete Club/Society](#delete-clubsociety)
+  - [Lecturers App](#lecturers-app)
+    - [Lecturer](#lecturer)
+      - [Create Lecturer](#create-lecturer)
+      - [Get Lecturer](#get-lecturer)
+      - [Update Lecturer](#update-lecturer)
+      - [Delete Lecturer](#delete-lecturer)
+  - [Notes App](#notes-app)
+    - [Categories](#categories)
+      - [Create Categories in Bulk](#create-categories-in-bulk)
+      - [Create Single Category](#create-single-category)
+      - [Get Categories](#get-categories)
+      - [Delete Category by ID](#delete-category-by-id)
+      - [Delete Category by Name](#delete-category-by-name)
+      - [Delete Categories in Bulk](#delete-categories-in-bulk)
+    - [Documents](#documents)
+      - [Upload Document](#upload-document)
+      - [Download Document by ID](#download-document-by-id)
+      - [Download Document by Title](#download-document-by-title)
+      - [Download URLs for All Documents](#download-urls-for-all-documents)
+      - [Download URLs by Document IDs](#download-urls-by-document-ids)
+      - [Download URLs by Document Titles](#download-urls-by-document-titles)
+    - [Topics](#topics)
+      - [Create Topic](#create-topic)
+      - [Get All Topics](#get-all-topics)
+      - [Get Topic by ID](#get-topic-by-id)
+      - [Get Topics by Name](#get-topics-by-name)
+      - [Update Topic](#update-topic)
+      - [Delete Topic](#delete-topic)
+    - [Lectures](#lectures)
+      - [Create Lecture](#create-lecture)
+      - [Get All Lectures](#get-all-lectures)
+      - [Get Lecture by ID](#get-lecture-by-id)
+      - [Update Lecture by ID](#update-lecture-by-id)
+      - [Update Lecture by Query Parameters](#update-lecture-by-query-parameters)
+  - [Testing API endpoints](#testing-api-endpoints)
+
 # UjuziHub API Endpoints
 
 The following API endpoints are available:
-
 ## Accounts App
+### CustomUser
 
-- **User Registration**: Register a new user.
-  - Method: POST
-  - URL: `http://localhost:8000/accounts/register/`
-  - Fields: `username`, `email`, `password`
+#### User Registration
+- Method: POST
+- URL: `http://localhost:8000/accounts/register/`
+- Fields: `username`, `email`, `password`
 
-- **Verify Email**: Verify the user's email address using the verification token received via email.
-  - Method: GET
-  - URL: `http://localhost:8000/accounts/verify-email/`
-  - Requires authentication: No
+#### Verify Email
+- Method: GET
+- URL: `http://localhost:8000/accounts/verify-email/`
+- Requires authentication: No
 
-- **User Login**: Log in a user and obtain an authentication token.
-  - Method: POST
-  - URL: `http://localhost:8000/accounts/login/`
-  - Fields: `username`, `password`
+#### User Login
+- Method: POST
+- URL: `http://localhost:8000/accounts/login/`
+- Fields: `username`, `password`
 
-- **User Logout**: Log out the authenticated user.
-  - Method: POST
-  - URL: `http://localhost:8000/accounts/logout/`
-  - Requires authentication: Yes
+#### User Logout
+- Method: POST
+- URL: `http://localhost:8000/accounts/logout/`
+- Requires authentication: Yes
 
-- **Get User Profile**: Get the profile information of the authenticated user.
-  - Method: GET
-  - URL: `http://localhost:8000/accounts/profile/`
-  - Requires authentication: Yes
+### UserProfile
 
-- **Update User Profile**: Update the profile information of the authenticated user.
-  - Method: POST
-  - URL: `http://localhost:8000/accounts/profile/`
-  - Requires authentication: Yes
+#### Get User Profile
+- Method: GET
+- URL: `http://localhost:8000/accounts/profile/`
+- Requires authentication: Yes
 
-- **Delete User**: Delete the authenticated user's account.
-  - Method: DELETE
-  - URL: `http://localhost:8000/accounts/delete/`
-  - Requires authentication: Yes
+#### Update User Profile
+- Method: POST
+- URL: `http://localhost:8000/accounts/profile/`
+- Requires authentication: Yes
+
+#### Delete User
+- Method: DELETE
+- URL: `http://localhost:8000/accounts/delete/`
+- Requires authentication: Yes
+>```
 
 
 
 
 ## Institutions App
-
 ### Institution
-- **Create Institution**: Create a new institution.
-  - Method: POST
-  - URL: `http://localhost:8000/institutions/institution/`
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-  - Request Data Example:
+
+#### Create Institution
+- Method: POST
+- URL: `http://localhost:8000/institutions/institution/`
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token <your_auth_token>
+- Request Data Example:
     ```json
     {
         "category": "university",
         "name": "<institution_name>"
     }
     ```
-  - Sample Response:
-    ```json
-    {
-        "id": 73,
-        "chancellor": "<chancellor_username>",
-        "vice_chancellor": null,
-        "admins": ["<chancellor_username>", "<created_by_username>", "<admin1_username>", "<admin2_username>"],
-        "created_by": "<created_by_username>",
-        "category": "university",
-        "name": "<institution_name>"
-    }
-    ```
-  - `Note:` chancellor, vice_chancellor and created_by are always added by default to the admins list. Their admin status cannot be changed unless new users are provided in their place. i.e. If chancellor is changed to a different user. 
-    
-
-
-- **Get Institution**: Retrieve an institution by its name.
-  - Method: GET
-  - URL: `http://localhost:8000/institutions/institution/retrieve_institution/?name=<institution_name>`
-  - `NOTE:` You can also provide the primary key or id of the institution alone instead of providing name. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-  - Sample Response:
+- Sample Response:
     ```json
     {
         "id": 73,
@@ -95,25 +154,45 @@ The following API endpoints are available:
         "name": "<institution_name>"
     }
     ```
+- `Note:` Chancellor, vice_chancellor, and created_by are always added by default to the admins list. Their admin status cannot be changed unless new users are provided in their place, i.e., if the chancellor is changed to a different user.
 
+#### Get Institution
+- Method: GET
+- URL: `http://localhost:8000/institutions/institution/retrieve_institution/?name=<institution_name>`
+- `NOTE:` You can also provide the primary key or id of the institution alone instead of providing the name. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token <your_auth_token>
+- Sample Response:
+    ```json
+    {
+        "id": 73,
+        "chancellor": "<chancellor_username>",
+        "vice_chancellor": null,
+        "admins": ["<chancellor_username>", "<created_by_username>", "<admin1_username>", "<admin2_username>"],
+        "created_by": "<created_by_username>",
+        "category": "university",
+        "name": "<institution_name>"
+    }
+    ```
 
-
-- **Update Institution**: Update an institution by its name.
-  - Method: PUT
-  - URL: `http://localhost:8000/institutions/institution/update_institution/?name=<institution_name>`
-  -  `NOTE:` You can also provide the primary key or id of the institution alone instead of providing name. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-  - Sample Request Data:
+#### Update Institution
+- Method: PUT
+- URL: `http://localhost:8000/institutions/institution/update_institution/?name=<institution_name>`
+- `NOTE:` You can also provide the primary key or id of the institution alone instead of providing the name. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token <your_auth_token>
+- Sample Request Data:
     ```json
     {
         "chancellor": "<new_chancellor_username>",
         "remove_admins": ["<admin1_username>"]
     }
     ```
-  - Sample Response: Updated institution details.
+- Sample Response: Updated institution details.
     ```json
     {
         "id": 73,
@@ -125,23 +204,22 @@ The following API endpoints are available:
         "name": "<institution_name>"
     }
     ```
-  - **Response when not authorized:**
+- **Response when not authorized:**
   ```json
   {
       "error": "You are not authorized to update this institution. Only institution-level admins can update."
   }
 
-
-- **Delete Institution**: Delete an institution by its name.
-  - Method: DELETE
-  - URL: `http://localhost:8000/institutions/institution/delete_institution/?name=<institution_name>`
-  - `NOTE:` You can also provide the primary key or id of the institution alone instead of providing name. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-  - Sample Response: Message indicating successful deletion.
-  - **Response when not authorized:**
+#### Delete Institution
+- Method: DELETE
+- URL: `http://localhost:8000/institutions/institution/delete_institution/?name=<institution_name>`
+- `NOTE:` You can also provide the primary key or id of the institution alone instead of providing the name. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token <your_auth_token>
+- Sample Response: Message indicating successful deletion.
+- **Response when not authorized:**
  ```json
  {
     "error": "You are not authorized to DELETE this institution. Only institution-level admins can DELETE."
@@ -152,14 +230,14 @@ The following API endpoints are available:
 
 ### School
 
-- **Create School**: Create a new school.
-  - Method: POST
-  - URL: `http://localhost:8000/institutions/school/`
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-  - Request Data Example:
+#### Create School
+- Method: POST
+- URL: `http://localhost:8000/institutions/school/`
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token <your_auth_token>
+- Request Data Example:
     ```json
     {
         "name": "<school_name>",
@@ -167,7 +245,7 @@ The following API endpoints are available:
         "admins": ["<school_admin1_username>", "<school_admin2_username>"]
     }
     ```
-  - Sample Response:
+- Sample Response:
     ```json
     {
         "id": <school_id>,
@@ -178,17 +256,17 @@ The following API endpoints are available:
         "institution": "<institution_name>"
     }
     ```
-  - `Note:` The institution is automatically set based on the institution the user is an admin. If not an institution leve admin in any institution, the user can't create schools.
+- `Note:` The institution is automatically set based on the institution the user is an admin. If not an institution-level admin in any institution, the user can't create schools.
 
-- **Get School**: Retrieve a school by its name.
-  - Method: GET
-  - URL: `http://localhost:8000/institutions/school/retrieve_school/?name=<school_name>&institution=<institution_name>`
-  -  `NOTE:` You can also provide the primary key or id of the school alone instead of providing name and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-  - Sample Response:
+#### Get School
+- Method: GET
+- URL: `http://localhost:8000/institutions/school/retrieve_school/?name=<school_name>&institution=<institution_name>`
+- `NOTE:` You can also provide the primary key or id of the school alone instead of providing name and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token <your_auth_token>
+- Sample Response:
     ```json
     {
         "id": <school_id>,
@@ -199,12 +277,12 @@ The following API endpoints are available:
         "institution": "<institution_name>"
     }
     ```
-  - **Response when no parameters provided:**
+- **Response when no parameters provided:**
     ```json
     {
         "error": "You must provide either the 'id' or 'name' parameter for the lookup."
     }
-  - **Response when no institution provided:All schools with that nam are returned**
+- **Response when no institution provided: All schools with that name are returned**
     ```json
     [
         {
@@ -227,15 +305,15 @@ The following API endpoints are available:
     ]
     ```
 
-- **Update School**: Update a school by its name.
-  - Method: PUT
-  - URL: `http://localhost:8000/institutions/school/update_school/?name=<school_name>&institution=<institution_name>`
-  -  `NOTE:` You can also provide the primary key or id of the school alone instead of providing name and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-  - Sample Request Data:
+#### Update School
+- Method: PUT
+- URL: `http://localhost:8000/institutions/school/update_school/?name=<school_name>&institution=<institution_name>`
+- `NOTE:` You can also provide the primary key or id of the school alone instead of providing name and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token <your_auth_token>
+- Sample Request Data:
     ```json
     {
         "head": "<new_head_username>",
@@ -243,7 +321,7 @@ The following API endpoints are available:
         "admins":["<school_admin3_username>"]
     }
     ```
-  - Sample Response: Updated school details.
+- Sample Response: Updated school details.
     ```json
     {
         "id": <school_id>,
@@ -254,45 +332,47 @@ The following API endpoints are available:
         "institution": "<institution_name>"
     }
     ```
-  - **Response when not authorized:**
+- **Response when not authorized:**
     ```json
     {
         "error": "You are not authorized to update this school. Only school-level admins can update."
     }
 
-- **Delete School**: Delete a school by its name.
-  - Method: DELETE
-  - URL: `http://localhost:8000/institutions/school/delete_school/?name=<school_name>&institution=<institution_name>`
-  -  `NOTE:` You can also provide the primary key or id of the school alone instead of providing name and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-  - Sample Response: Message indicating successful deletion.
-  - **Response when not authorized:**
+#### Delete School
+- Method: DELETE
+- URL: `http://localhost:8000/institutions/school/delete_school/?name=<school_name>&institution=<institution_name>`
+- `NOTE:` You can also provide the primary key or id of the school alone instead of providing name and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token <your_auth_token>
+- Sample Response: Message indicating successful deletion.
+- **Response when not authorized:**
     ```json
     {
         "error": "You are not authorized to DELETE this school. Only school-level admins can DELETE."
     }
     ```
 
+
+
 ### Department
 
-- **Create Department**: Create a new department.
-  - Method: POST
-  - URL: `http://localhost:8000/institutions/department/`
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
-  - Request Data Example:
+#### Create Department
+- Method: POST
+- URL: `http://localhost:8000/institutions/department/`
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
+- Request Data Example:
     ```json
     {
         "name": "<department_name>",
         "admins": ["<department_admin1_username>"]
     }
     ```
-  - Sample Response:
+- Sample Response:
     ```json
     {
         "id": <department_id>,
@@ -306,23 +386,23 @@ The following API endpoints are available:
         "name": "<department_name>"
     }
     ```
-  - Note: The 'school' field is automatically filled based on the institution the user is an admin of.
+- Note: The 'school' field is automatically filled based on the institution the user is an admin of.
 
-- **Get Department**:
-  - Method: GET
-  - URL: `http://localhost:8000/institutions/department/retrieve_department/?name=<department_name>&institution=<institution_name>`
-  -  `NOTE:` You can also provide the primary key or id of the department alone instead of providing name and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
+#### Get Department
+- Method: GET
+- URL: `http://localhost:8000/institutions/department/retrieve_department/?name=<department_name>&institution=<institution_name>`
+- `NOTE:` You can also provide the primary key or id of the department alone instead of providing name and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
 
-- **Update Department**: 
-  - Method: PUT
-  - URL: `http://localhost:8000/institutions/department/update_department/?name=<department_name>&institution=<institution_name>`
-  -  `NOTE:` You can also provide the primary key or id of the department alone instead of providing name and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
-  - Sample Request Data:
+#### Update Department
+- Method: PUT
+- URL: `http://localhost:8000/institutions/department/update_department/?name=<department_name>&institution=<institution_name>`
+- `NOTE:` You can also provide the primary key or id of the department alone instead of providing name and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
+- Sample Request Data:
     ```json
     {
         "head": "<new_head_username>",
@@ -330,7 +410,7 @@ The following API endpoints are available:
         "admins": ["<department_admin3_username>"]
     }
     ```
-  - Sample Response: Updated department details.
+- Sample Response: Updated department details.
     ```json
     {
         "id": <department_id>,
@@ -344,44 +424,45 @@ The following API endpoints are available:
         "name": "<department_name>"
     }
     ```
-  - Response when not authorized:
+- Response when not authorized:
     ```json
     {
         "error": "You are not authorized to update this department. Only department-level admins can update."
     }
 
-- **Delete Department**: Delete a department by its name.
-  - Method: DELETE
-  - URL: `http://localhost:8000/institutions/department/delete_department/?name=<department_name>&institution=<institution_name>`
-  -  `NOTE:` You can also provide the primary key or id of the department alone instead of providing name and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
-  - Sample Response: Message indicating successful deletion.
-  - Response when not authorized:
+#### Delete Department
+- Method: DELETE
+- URL: `http://localhost:8000/institutions/department/delete_department/?name=<department_name>&institution=<institution_name>`
+- `NOTE:` You can also provide the primary key or id of the department alone instead of providing name and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
+- Sample Response: Message indicating successful deletion.
+- Response when not authorized:
     ```json
     {
         "error": "You are not authorized to DELETE this department. Only department-level admins can DELETE."
     }
 
 
+
 ### Course
 
-- **Create Course**: Create a new course.
-  - Method: POST
-  - URL: `http://localhost:8000/institutions/course/`
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
-  - Request Data Example:
+#### Create Course
+- Method: POST
+- URL: `http://localhost:8000/institutions/course/`
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
+- Request Data Example:
     ```json
     {
         "name": "Bachelor of Commerce"
     }
     ```
-  - Sample Response:
+- Sample Response:
     ```json
     {
         "id": 4,
@@ -392,17 +473,17 @@ The following API endpoints are available:
         "name": "Bachelor of Commerce"
     }
     ```
-  - `Note:` The user in the request can only create courses for the department they are an admin in.
+- `Note:` The user in the request can only create courses for the department they are an admin in.
 
-- **Get Course**: Retrieve a course by its name.
-  - Method: GET
-  - URL: `http://localhost:8000/institutions/course/retrieve_course/?name=Bachelor of Commerce&institution=<user_institution>`
-  - `NOTE:` You can also provide the primary key or id of the course alone instead of providing name and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
-  - Sample Response:
+#### Get Course
+- Method: GET
+- URL: `http://localhost:8000/institutions/course/retrieve_course/?name=Bachelor of Commerce&institution=<user_institution>`
+- `NOTE:` You can also provide the primary key or id of the course alone instead of providing name and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
+- Sample Response:
     ```json
     [
       {
@@ -415,7 +496,7 @@ The following API endpoints are available:
     }
     ]
     ```
-  - **Response when no institution provided:**
+- **Response when no institution provided:**
     ```json
     [
         {
@@ -430,22 +511,22 @@ The following API endpoints are available:
     ]
     ```
 
-- **Update Course**: Update a course by its name.
-  - Method: PUT
-  - URL: `http://localhost:8000/institutions/course/update_course/?name=Bachelor of Commerce&institution=<user_institution>`
-  - `NOTE:` The name of the course and the institution are to be provided in the query parameters.
-  - `NOTE:` You can also provide the primary key or id of the course alone instead of providing name and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
-  - Sample Request Data:
+#### Update Course
+- Method: PUT
+- URL: `http://localhost:8000/institutions/course/update_course/?name=Bachelor of Commerce&institution=<user_institution>`
+- `NOTE:` The name of the course and the institution are to be provided in the query parameters.
+- `NOTE:` You can also provide the primary key or id of the course alone instead of providing name and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
+- Sample Request Data:
     ```json
     {
         "name": "Bachelor of Commerce Revised"
     }
     ```
-  - Sample Response: Updated course details.
+- Sample Response: Updated course details.
     ```json
     [{
         "id": 4,
@@ -456,50 +537,47 @@ The following API endpoints are available:
         "name": "Bachelor of Commerce Revised"
     }]
     ```
-  - **Response when not authorized:**
+- **Response when not authorized:**
     ```json
     {
         "error": "You are not authorized to update this course. Only department-level admins can update."
     }
     ```
 
-- **Delete Course**: Delete a course by its name.
-  - Method: DELETE
-  - URL: `http://localhost:8000/institutions/course/delete_course/?name=Bachelor of Commerce&institution=<user_institution>`
-  - `NOTE:` The name of the course and the institution are to be provided in the query parameters.
-  - `NOTE:` You can also provide the primary key or id of the course alone instead of providing name and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
-  - Sample Response: Message indicating successful deletion.
-  - **Response when not authorized:**
+#### Delete Course
+- Method: DELETE
+- URL: `http://localhost:8000/institutions/course/delete_course/?name=Bachelor of Commerce&institution=<user_institution>`
+- `NOTE:` The name of the course and the institution are to be provided in the query parameters.
+- `NOTE:` You can also provide the primary key or id of the course alone instead of providing name and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
+- Sample Response: Message indicating successful deletion.
+- **Response when not authorized:**
     ```json
     {
         "error": "You are not authorized to DELETE this course. Only department-level admins can DELETE."
     }
     ```
 
-
-
-
 ### Unit
 
-- **Create Unit**: Create a new unit.
-  - Method: POST
-  - URL: `http://localhost:8000/institutions/unit/`
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
-  - Request Data Example:
+#### Create Unit
+- Method: POST
+- URL: `http://localhost:8000/institutions/unit/`
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
+- Request Data Example:
     ```json
     {
         "name": "accounting",
         "course": "Bachelor of Commerce"
     }
     ```
-  - Sample Response:
+- Sample Response:
     ```json
     {
         "id": 3,
@@ -511,17 +589,17 @@ The following API endpoints are available:
         "name": "accounting"
     }
     ```
-  - `Note:` The user in the request can only create units for courses offered by the department they are an admin in.
+- `Note:` The user in the request can only create units for courses offered by the department they are an admin in.
 
-- **Get Unit**: Retrieve a unit by its name, course, and institution.
-  - Method: GET
-  - URL: `http://localhost:8000/institutions/unit/retrieve_unit/?name=accounting&institution=<user_institution>&course=Bachelor of Commerce`
-  - `NOTE:` You can also provide the primary key or id of the unit alone instead of providing name, course, and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
-  - Sample Response:
+#### Get Unit
+- Method: GET
+- URL: `http://localhost:8000/institutions/unit/retrieve_unit/?name=accounting&institution=<user_institution>&course=Bachelor of Commerce`
+- `NOTE:` You can also provide the primary key or id of the unit alone instead of providing name, course, and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
+- Sample Response:
     ```json
     [
         {
@@ -535,7 +613,7 @@ The following API endpoints are available:
         }
     ]
     ```
-  - **Response when no institution and course provided:**
+- **Response when no institution and course provided:**
     ```json
     [
         {
@@ -551,21 +629,21 @@ The following API endpoints are available:
     ]
     ```
 
-- **Update Unit**: Update a unit by its name, course, and institution.
-  - Method: PUT
-  - URL: `http://localhost:8000/institutions/unit/update_unit/?name=accounting&institution=<user_institution>&course=Bachelor of Commerce`
-  - `NOTE:` You can also provide the primary key or id of the unit alone instead of providing name, course, and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
-  - Sample Request Data:
+#### Update Unit
+- Method: PUT
+- URL: `http://localhost:8000/institutions/unit/update_unit/?name=accounting&institution=<user_institution>&course=Bachelor of Commerce`
+- `NOTE:` You can also provide the primary key or id of the unit alone instead of providing name, course, and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
+- Sample Request Data:
     ```json
     {
         "name": "accounting101"
     }
     ```
-  - Sample Response: Updated unit details.
+- Sample Response: Updated unit details.
     ```json
     [
         {
@@ -579,23 +657,23 @@ The following API endpoints are available:
         }
     ]
     ```
-  - **Response when not authorized:**
+- **Response when not authorized:**
     ```json
     {
         "error": "You are not authorized to update this unit. Only department-level admins can update."
     }
     ```
 
-- **Delete Unit**: Delete a unit by its name, course, and institution.
-  - Method: DELETE
-  - URL: `http://localhost:8000/institutions/unit/delete_unit/?name=accounting&institution=<user_institution>&course=Bachelor of Commerce`
-  - `NOTE:` You can also provide the primary key or id of the unit alone instead of providing name, course, and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
-  - Sample Response: Message indicating successful deletion.
-  - **Response when not authorized:**
+#### Delete Unit
+- Method: DELETE
+- URL: `http://localhost:8000/institutions/unit/delete_unit/?name=accounting&institution=<user_institution>&course=Bachelor of Commerce`
+- `NOTE:` You can also provide the primary key or id of the unit alone instead of providing name, course, and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
+- Sample Response: Message indicating successful deletion.
+- **Response when not authorized:**
     ```json
     {
         "error": "You are not authorized to DELETE this unit. Only department-level admins can DELETE."
@@ -608,18 +686,17 @@ The following API endpoints are available:
 
 
 
-
 ## Clubs and Societies App
 ### ClubSociety
 
-- **Create Club/Society**: Create a new club or society.
-  - Method: POST
-  - URL: `http://localhost:8000/clubs_societies/clubsociety/`
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
-  - Request Data Example:
+#### Create Club/Society
+- Method: POST
+- URL: `http://localhost:8000/clubs_societies/clubsociety/`
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
+- Request Data Example:
     ```json
     {
         "name": "<club_name>",
@@ -627,7 +704,7 @@ The following API endpoints are available:
         "admins": ["<admin1_username>", "<admin2_username>"]
     }
     ```
-  - Sample Response:
+- Sample Response:
     ```json
     {
         "id": <club_id>,
@@ -650,30 +727,30 @@ The following API endpoints are available:
     }
     ```
 
-- **Get Club/Society**: 
-  - Method: GET
-  - URL: `http://localhost:8000/clubs_societies/clubsociety/retrieve_club/?name=<club_name>&institution=<institution_name>`
-  - `NOTE:` You can also provide the primary key or id of the clubsociety alone instead of providing name and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
+#### Get Club/Society
+- Method: GET
+- URL: `http://localhost:8000/clubs_societies/clubsociety/retrieve_club/?name=<club_name>&institution=<institution_name>`
+- `NOTE:` You can also provide the primary key or id of the clubsociety alone instead of providing name and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
 
-- **Update Club/Society**:
-  - Method: PUT
-  - URL: `http://localhost:8000/clubs_societies/clubsociety/update_club/?name=<club_name>&institution=<institution_name>`
-  - `NOTE:` You can also provide the primary key or id of the clubsociety alone instead of providing name and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
-  - Sample Request Data:
+#### Update Club/Society
+- Method: PUT
+- URL: `http://localhost:8000/clubs_societies/clubsociety/update_club/?name=<club_name>&institution=<institution_name>`
+- `NOTE:` You can also provide the primary key or id of the clubsociety alone instead of providing name and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
+- Sample Request Data:
     ```json
     {
         "remove_members": ["<admin1_username>"]
     }
     ```
-  - Sample Response:
+- Sample Response:
     ```json
     {
         "id": <club_id>,
@@ -695,24 +772,23 @@ The following API endpoints are available:
         "youtube": ""
     }
     ```
-  - When a member is rempved, their admin status is revoked,
-  - The user whocreates the club cannot be removed.
-  - To revoke admin status without removing the members, use:
-     ```json
+- When a member is removed, their admin status is revoked,
+- The user who creates the club cannot be removed.
+- To revoke admin status without removing the members, use:
+    ```json
     {
         "remove_admins": ["<admin1_username>"]
     }
     ```
 
-
-- **Delete Club/Society**: Delete a club or society by its name.
-  - Method: DELETE
-  - URL: `http://localhost:8000/clubs_societies/clubsociety/delete_club/?name=<club_name>&institution=<institution_name>`
-  - `NOTE:` You can also provide the primary key or id of the clubsociety alone instead of providing name and institution. Provide it for the key 'id'.
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token `<your_auth_token>`
+#### Delete Club/Society
+- Method: DELETE
+- URL: `http://localhost:8000/clubs_societies/clubsociety/delete_club/?name=<club_name>&institution=<institution_name>`
+- `NOTE:` You can also provide the primary key or id of the clubsociety alone instead of providing name and institution. Provide it for the key 'id'.
+- Requires authentication: Yes
+- Headers:
+  - Key: Authorization
+  - Value: Token `<your_auth_token>`
 
 
 
@@ -722,7 +798,7 @@ The following API endpoints are available:
 ## Lecturers App
 ### Lecturer
 
-**Create Lecturer**
+#### Create Lecturer
 - Method: POST
 - URL: `http://localhost:8000/lecturers/lecturer/`
 - Requires authentication: Yes (Token should be provided in the header)
@@ -758,7 +834,7 @@ The following API endpoints are available:
     }
     ```
 
-**Get Lecturer**
+#### Get Lecturer
 - Method: GET
 - URL: `http://localhost:8000/lecturers/lecturer/retrieve_lecturer/?username=<username>`
 - Requires authentication: Yes (Token should be provided in the header)
@@ -787,7 +863,7 @@ The following API endpoints are available:
     }
     ```
 
-**Update Lecturer**
+#### Update Lecturer
 - Method: PUT
 - URL: `http://localhost:8000/lecturers/lecturer/update_lecturer/`
 - Requires authentication: Yes (Token should be provided in the header)
@@ -824,7 +900,7 @@ The following API endpoints are available:
     ```
 - `NOTE:` Only the user in the request can update their lecturer status.
 
-**Delete Lecturer**
+#### Delete Lecturer
 - Method: DELETE
 - URL: `http://localhost:8000/lecturers/lecturer/delete_lecturer/`
 - Requires authentication: Yes (Token should be provided in the header)
@@ -834,15 +910,14 @@ The following API endpoints are available:
 
 
 
-
 ## Notes App
 
 ### Categories
 
-- **Create Categories in Bulk**: Create multiple categories at once.
-  - Method: POST
-  - URL: `http://localhost:8000/notes/categories/bulk_create/`
-  - Request Data Example:
+#### Create Categories in Bulk
+- Method: POST
+- URL: `http://localhost:8000/notes/categories/bulk_create/`
+- Request Data Example:
     ```json
     [
         {
@@ -857,32 +932,32 @@ The following API endpoints are available:
     ]
     ```
 
-- **Create Single Category**: Create a single category.
-  - Method: POST
-  - URL: `http://localhost:8000/notes/categories/create/`
-  - Request Data Example:
+#### Create Single Category
+- Method: POST
+- URL: `http://localhost:8000/notes/categories/create/`
+- Request Data Example:
     ```json
     {
         "name": "Business"
     }
     ```
 
-- **Get Categories**: Retrieve a list of all categories.
-  - Method: GET
-  - URL: `http://localhost:8000/notes/categories/`
+#### Get Categories
+- Method: GET
+- URL: `http://localhost:8000/notes/categories/`
 
-- **Delete Category by ID**: Delete a category by its ID.
-  - Method: DELETE
-  - URL: `http://localhost:8000/notes/categories/<category_id>/`
+#### Delete Category by ID
+- Method: DELETE
+- URL: `http://localhost:8000/notes/categories/<category_id>/`
 
-- **Delete Category by Name**: Delete a category by its name.
-  - Method: DELETE
-  - URL: `http://localhost:8000/notes/categories/delete_by_name/<category_name>/`
+#### Delete Category by Name
+- Method: DELETE
+- URL: `http://localhost:8000/notes/categories/delete_by_name/<category_name>/`
 
-- **Delete Categories in Bulk**: Delete multiple categories at once.
-  - Method: DELETE
-  - URL: `http://localhost:8000/notes/categories/bulk_delete/`
-  - Request Data Example:
+#### Delete Categories in Bulk
+- Method: DELETE
+- URL: `http://localhost:8000/notes/categories/bulk_delete/`
+- Request Data Example:
     ```json
     {
         "category_names": ["Mathematics", "Music", "Engineering"]
@@ -891,10 +966,10 @@ The following API endpoints are available:
 
 ### Documents
 
-- **Upload Document**: Upload a document.
-  - Method: POST
-  - URL: `http://localhost:8000/notes/documents/`
-  - Request Data Example:
+#### Upload Document
+- Method: POST
+- URL: `http://localhost:8000/notes/documents/`
+- Request Data Example:
     ```json
     {
         "documents": <file>,
@@ -902,103 +977,102 @@ The following API endpoints are available:
         "title": "Document Title"  // Optional
     }
     ```
-  - Note: Authentication details are required in the header.
+- Note: Authentication details are required in the header.
     - Key: Authorization
     - Value: Token <your_auth_token>
 
-- **Download Document by ID**: Download a document by its ID.
-  - Method: GET
-  - URL: `http://localhost:8000/notes/documents/<document_id>/download_document_by_id/`
-  - Note: Authentication details are required in the header.
+#### Download Document by ID
+- Method: GET
+- URL: `http://localhost:8000/notes/documents/<document_id>/download_document_by_id/`
+- Note: Authentication details are required in the header.
     - Key: Authorization
     - Value: Token <your_auth_token>
 
-- **Download Document by Title**: Download a document by its title.
-  - Method: GET
-  - URL: `http://localhost:8000/notes/documents/<document_title>/download_document_by_title/`
-  - Note: Authentication details are required in the header.
+#### Download Document by Title
+- Method: GET
+- URL: `http://localhost:8000/notes/documents/<document_title>/download_document_by_title/`
+- Note: Authentication details are required in the header.
     - Key: Authorization
     - Value: Token <your_auth_token>
 
-- **Download URLs for All Documents**: Get download URLs for all documents.
-  - Method: GET
-  - URL: `http://localhost:8000/notes/documents/document_urls/`
-  - Note: Authentication details are required in the header.
+#### Download URLs for All Documents
+- Method: GET
+- URL: `http://localhost:8000/notes/documents/document_urls/`
+- Note: Authentication details are required in the header.
     - Key: Authorization
     - Value: Token <your_auth_token>
 
-- **Download URLs by Document IDs**: Get download URLs by providing document IDs in the query.
-  - Method: GET
-  - URL: `http://localhost:8000/notes/documents/document_urls/?ids=<document_id_1>,<document_id_2>`
-  - Note: Authentication details are required in the header.
+#### Download URLs by Document IDs
+- Method: GET
+- URL: `http://localhost:8000/notes/documents/document_urls/?ids=<document_id_1>,<document_id_2>`
+- Note: Authentication details are required in the header.
     - Key: Authorization
     - Value: Token <your_auth_token>
 
-- **Download URLs by Document Titles**: Get download URLs by providing document titles in the query.
-  - Method: GET
-  - URL: `http://localhost:8000/notes/documents/document_urls/?titles=<document_title_1>,<document_title_2>`
-  - Note: Authentication details are required in the header.
+#### Download URLs by Document Titles
+- Method: GET
+- URL: `http://localhost:8000/notes/documents/document_urls/?titles=<document_title_1>,<document_title_2>`
+- Note: Authentication details are required in the header.
     - Key: Authorization
     - Value: Token <your_auth_token>
 
 ### Topics
 
-- **Create Topic**: Create a new topic.
-  - Method: POST
-  - URL: `http://localhost:8000/notes/topics/create_topic/`
-  - Request Data Example:
+#### Create Topic
+- Method: POST
+- URL: `http://localhost:8000/notes/topics/create_topic/`
+- Request Data Example:
     - Form Data:
-      - Keys: `document_title` (optional), `start_page` (optional), `end_page` (optional), `uploaded_document` (file)
+        - Keys: `document_title` (optional), `start_page` (optional), `end_page` (optional), `uploaded_document` (file)
     - Note: Either `document_title` or `uploaded_document` must be provided. If both are provided, a document is created with the provided title and the topic is associated with that document. If only one is provided, the code attempts to find an existing document or create a new one.
-    
     - Note: Authentication details are required in the header.
-      - Key: Authorization
-      - Value: Token <your_auth_token>
+        - Key: Authorization
+        - Value: Token <your_auth_token>
 
-- **Get All Topics**: Retrieve a list of all topics.
-  - Method: GET
-  - URL: `http://localhost:8000/notes/topics/`
-  - Note: Authentication details are required in the header.
-      - Key: Authorization
-      - Value: Token <your_auth_token>
+#### Get All Topics
+- Method: GET
+- URL: `http://localhost:8000/notes/topics/`
+- Note: Authentication details are required in the header.
+    - Key: Authorization
+    - Value: Token <your_auth_token>
 
-- **Get Topic by ID**: Retrieve a topic by its ID.
-  - Method: GET
-  - URL: `http://localhost:8000/notes/topics/<topic_id>/`
-  - Note: Authentication details are required in the header.
-      - Key: Authorization
-      - Value: Token <your_auth_token>
+#### Get Topic by ID
+- Method: GET
+- URL: `http://localhost:8000/notes/topics/<topic_id>/`
+- Note: Authentication details are required in the header.
+    - Key: Authorization
+    - Value: Token <your_auth_token>
 
-- **Get Topics by Name**: Retrieve topics by name.
-  - Method: GET
-  - URL: `http://localhost:8000/notes/topics/<topic_name>/`
-  - Note: Authentication details are required in the header.
-      - Key: Authorization
-      - Value: Token <your_auth_token>
+#### Get Topics by Name
+- Method: GET
+- URL: `http://localhost:8000/notes/topics/<topic_name>/`
+- Note: Authentication details are required in the header.
+    - Key: Authorization
+    - Value: Token <your_auth_token>
 
-- **Update Topic**: Update a topic by providing parameters in the query.
-  - Method: PUT
-  - URL: `http://localhost:8000/notes/topics/update_topic/?topic_name=<topic_name>&document_title=<document_title>`
-  - Request Data Example (Form Data): Fields to be updated.
+#### Update Topic
+- Method: PUT
+- URL: `http://localhost:8000/notes/topics/update_topic/?topic_name=<topic_name>&document_title=<document_title>`
+- Request Data Example (Form Data): Fields to be updated.
     - Note: Parameters are provided in the query.
-  - Note: Authentication details are required in the header.
-      - Key: Authorization
-      - Value: Token <your_auth_token>
+    - Note: Authentication details are required in the header.
+        - Key: Authorization
+        - Value: Token <your_auth_token>
 
-- **Delete Topic**: Delete a topic by providing parameters in the query.
-  - Method: DELETE
-  - URL: `http://localhost:8000/notes/topics/delete_topic/?topic_name=<topic_name>&document_title=<document_title>`
-  - Note: Parameters are provided in the query.
-  - Note: Authentication details are required in the header.
-      - Key: Authorization
-      - Value: Token <your_auth_token>
+#### Delete Topic
+- Method: DELETE
+- URL: `http://localhost:8000/notes/topics/delete_topic/?topic_name=<topic_name>&document_title=<document_title>`
+- Note: Parameters are provided in the query.
+- Note: Authentication details are required in the header.
+    - Key: Authorization
+    - Value: Token <your_auth_token>
 
 ### Lectures
 
-- **Create Lecture**: Create a new lecture.
-  - Method: POST
-  - URL: `http://localhost:8000/notes/lectures/create_lecture/`
-  - Request Data Example:
+#### Create Lecture
+- Method: POST
+- URL: `http://localhost:8000/notes/lectures/create_lecture/`
+- Request Data Example:
     ```json
     {
         "lecturer": 3,
@@ -1008,67 +1082,42 @@ The following API endpoints are available:
         "topics": [1, 9]
     }
     ```
-  - Note: Authentication details are required in the header.
-      - Key: Authorization
-      - Value: Token <your_auth_token>
+- Note: Authentication details are required in the header.
+    - Key: Authorization
+    - Value: Token <your_auth_token>
 
-- **Get All Lectures**: Retrieve a list of all lectures.
-  - Method: GET
-  - URL: `http://localhost:8000/notes/lectures/`
-  - Note: Authentication details are required in the header.
-      - Key: Authorization
-      - Value: Token <your_auth_token>
+#### Get All Lectures
+- Method: GET
+- URL: `http://localhost:8000/notes/lectures/`
+- Note: Authentication details are required in the header.
+    - Key: Authorization
+    - Value: Token <your_auth_token>
 
-- **Get Lecture by ID**: Retrieve a lecture by its ID.
-  - Method: GET
-  - URL: `http://localhost:8000/notes/lectures/<lecture_id>/`
-  - Note: Authentication details are required in the header.
-      - Key: Authorization
-      - Value: Token <your_auth_token>
+#### Get Lecture by ID
+- Method: GET
+- URL: `http://localhost:8000/notes/lectures/<lecture_id>/`
+- Note: Authentication details are required in the header.
+    - Key: Authorization
+    - Value: Token <your_auth_token>
 
-
-- **Update Lecture by ID**: Update a lecture by its ID.
-  - Method: PUT
-  - URL: `http://localhost:8000/notes/lectures/update_lecture/`
-  - Request Data Example:
+#### Update Lecture by ID
+- Method: PUT
+- URL: `http://localhost:8000/notes/lectures/update_lecture/`
+- Request Data Example:
     ```json
     {
         "id": 21,
         "topics": [1, 9]
     }
     ```
-  - Note: Authentication details are required in the header.
-      - Key: Authorization
-      - Value: Token <your_auth_token>
-  
+- Note: Authentication details are required in the header.
+    - Key: Authorization
+    - Value: Token <your_auth_token>
 
-- **Update Lecture by Query Parameters**: Update a lecture by providing its ID in query parameters.
-  - Method: PUT
-  - URL: `http://localhost:8000/notes/lectures/update_lecture/?id=<lecture_id>`
-  - Note: Authentication details are required in the header.
-      - Key: Authorization
-      - Value: Token <your_auth_token>
- 
+#### Update Lecture by Query Parameters
+- Method: PUT
+- URL: `http://localhost:8000/
 
-- **Delete Lecture by Query Parameters**: Delete a lecture by providing its ID in query parameters.
-  - Method: DELETE
-  - URL: `http://localhost:8000/notes/lectures/delete_lecture/?id=<lecture_id>`
-  - Note: Authentication details are required in the header.
-      - Key: Authorization
-      - Value: Token <your_auth_token>
-
-- **Delete Lecture by Request Data**: Delete a lecture by providing its ID in request data.
-  - Method: DELETE
-  - URL: `http://localhost:8000/notes/lectures/delete_lecture/`
-  - Request Data Example:
-    ```json
-    {
-        "id": 25
-    }
-    ```
-  - Note: Authentication details are required in the header.
-      - Key: Authorization
-      - Value: Token <your_auth_token>
 
 
 
