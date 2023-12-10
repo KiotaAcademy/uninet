@@ -148,7 +148,11 @@ class ObjectViewMixin:
         name_param_value = request.query_params.get(name_param, None)
         
         if id_param_value:
-            obj = get_object_or_404(queryset, pk=id_param_value)
+            objs = queryset.filter(pk=id_param_value)
+            #obj = get_object_or_404(queryset, pk=id_param_value)
+            if len(objs) == 0:
+                raise ValidationError(f"No object found with id '{id_param_value}'")
+        
         elif name_param_value:
             # Use Q objects to handle OR conditions for the same name in different institutions
             filter_conditions = Q(name__iexact=name_param_value)
@@ -156,13 +160,17 @@ class ObjectViewMixin:
                 return queryset.filter(filter_conditions)
             
             for key, value in filters.items():
-                filter_conditions &= Q(**{f"{key}__iexact": value})
-                obj = get_object_or_404(queryset, filter_conditions)
+                if value:
+                    filter_conditions &= Q(**{f"{key}__iexact": value})
+            objs = queryset.filter(filter_conditions)
+            if len(objs) == 0:
+                raise ValidationError(f"No object found with name '{name_param_value}'")
+
         else:
             # If no parameters are provided, raise a ValidationError
             raise ValidationError("You must provide either the 'id' or 'name' parameter for the lookup.")
         
-        return obj
+        return objs
 
     def check_authorization(self, obj, user, authorized_users_field='admins'):
         """

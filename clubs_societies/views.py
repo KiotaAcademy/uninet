@@ -30,14 +30,8 @@ class ClubSocietyViewSet(ObjectViewMixin, viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])
     def retrieve_club(self, request):
         institution_name = request.query_params.get('institution', None)
-
-        if institution_name:
-            club = self.lookup_object(request, self.queryset, filters={'institution__name': institution_name})
-            serializer = self.get_serializer(club)
-        else:
-            clubs = self.lookup_object(request, self.queryset)
-            serializer = self.get_serializer(clubs, many=True)
-            
+        clubs = self.lookup_object(request, self.queryset, filters={'institution__name': institution_name})
+        serializer = self.get_serializer(clubs, many=True)
         return Response(serializer.data)
     
     @action(detail=False, methods=['PUT'])
@@ -46,7 +40,7 @@ class ClubSocietyViewSet(ObjectViewMixin, viewsets.ModelViewSet):
         if not institution_name:
             return Response({'error': 'You must provide the institution in the query parameters of the request'}, status=status.HTTP_400_BAD_REQUEST)
 
-        club = self.lookup_object(request, self.queryset, filters={'institution__name': institution_name})
+        club = self.lookup_object(request, self.queryset, filters={'institution__name': institution_name})[0]
         authorized = self.check_authorization(club, request.user)
 
         if not authorized:
@@ -64,7 +58,7 @@ class ClubSocietyViewSet(ObjectViewMixin, viewsets.ModelViewSet):
         if not institution_name:
             return Response({'error': 'You must provide the institution in the query parameters of the request'}, status=status.HTTP_400_BAD_REQUEST)
 
-        club = self.lookup_object(request, self.queryset, filters={'institution__name': institution_name})
+        club = self.lookup_object(request, self.queryset, filters={'institution__name': institution_name})[0]
         authorized = self.check_authorization(club, request.user)
 
         if not authorized:
