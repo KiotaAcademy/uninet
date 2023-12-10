@@ -2,6 +2,15 @@
 - [Table of Contents](#table-of-contents)
 - [UjuziHub API Endpoints](#ujuzihub-api-endpoints)
   - [Accounts App](#accounts-app)
+    - [CustomUser](#customuser)
+      - [User Registration](#user-registration)
+      - [Verify Email](#verify-email)
+      - [User Login](#user-login)
+      - [User Logout](#user-logout)
+    - [UserProfile](#userprofile)
+      - [Get User Profile](#get-user-profile)
+      - [Update User Profile](#update-user-profile)
+      - [Delete User](#delete-user)
   - [Institutions App](#institutions-app)
     - [Institution](#institution)
       - [Create Institution](#create-institution)
@@ -72,43 +81,46 @@
 # UjuziHub API Endpoints
 
 The following API endpoints are available:
-
 ## Accounts App
+### CustomUser
 
-- **User Registration**: Register a new user.
-  - Method: POST
-  - URL: `http://localhost:8000/accounts/register/`
-  - Fields: `username`, `email`, `password`
+#### User Registration
+- Method: POST
+- URL: `http://localhost:8000/accounts/register/`
+- Fields: `username`, `email`, `password`
 
-- **Verify Email**: Verify the user's email address using the verification token received via email.
-  - Method: GET
-  - URL: `http://localhost:8000/accounts/verify-email/`
-  - Requires authentication: No
+#### Verify Email
+- Method: GET
+- URL: `http://localhost:8000/accounts/verify-email/`
+- Requires authentication: No
 
-- **User Login**: Log in a user and obtain an authentication token.
-  - Method: POST
-  - URL: `http://localhost:8000/accounts/login/`
-  - Fields: `username`, `password`
+#### User Login
+- Method: POST
+- URL: `http://localhost:8000/accounts/login/`
+- Fields: `username`, `password`
 
-- **User Logout**: Log out the authenticated user.
-  - Method: POST
-  - URL: `http://localhost:8000/accounts/logout/`
-  - Requires authentication: Yes
+#### User Logout
+- Method: POST
+- URL: `http://localhost:8000/accounts/logout/`
+- Requires authentication: Yes
 
-- **Get User Profile**: Get the profile information of the authenticated user.
-  - Method: GET
-  - URL: `http://localhost:8000/accounts/profile/`
-  - Requires authentication: Yes
+### UserProfile
 
-- **Update User Profile**: Update the profile information of the authenticated user.
-  - Method: POST
-  - URL: `http://localhost:8000/accounts/profile/`
-  - Requires authentication: Yes
+#### Get User Profile
+- Method: GET
+- URL: `http://localhost:8000/accounts/profile/`
+- Requires authentication: Yes
 
-- **Delete User**: Delete the authenticated user's account.
-  - Method: DELETE
-  - URL: `http://localhost:8000/accounts/delete/`
-  - Requires authentication: Yes
+#### Update User Profile
+- Method: POST
+- URL: `http://localhost:8000/accounts/profile/`
+- Requires authentication: Yes
+
+#### Delete User
+- Method: DELETE
+- URL: `http://localhost:8000/accounts/delete/`
+- Requires authentication: Yes
+>```
 
 
 
