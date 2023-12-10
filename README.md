@@ -75,9 +75,10 @@ The following API endpoints are available:
     
 
 
-- **Get Institution by Name**: Retrieve an institution by its name.
+- **Get Institution**: Retrieve an institution by its name.
   - Method: GET
   - URL: `http://localhost:8000/institutions/institution/retrieve_institution/?name=<institution_name>`
+  - `NOTE:` You can also provide the primary key or id of the institution alone instead of providing name. Provide it for the key 'id'.
   - Requires authentication: Yes
   - Headers:
     - Key: Authorization
@@ -95,31 +96,12 @@ The following API endpoints are available:
     }
     ```
 
-- **Get Institution by ID**: Retrieve an institution by its ID.
-  - Method: GET
-  - URL: `http://localhost:8000/institutions/institution/retrieve_institution/?id=33`
-  - OR
-  - URL: `http://localhost:8000/institutions/institution/32/`
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-  - Sample Response:
-    ```json
-    {
-        "id": 73,
-        "chancellor": "<chancellor_username>",
-        "vice_chancellor": null,
-        "admins": ["<chancellor_username>", "<created_by_username>", "<admin1_username>", "<admin2_username>"],
-        "created_by": "<created_by_username>",
-        "category": "university",
-        "name": "<institution_name>"
-    }
-    ```
+
 
 - **Update Institution**: Update an institution by its name.
   - Method: PUT
   - URL: `http://localhost:8000/institutions/institution/update_institution/?name=<institution_name>`
+  -  `NOTE:` You can also provide the primary key or id of the institution alone instead of providing name. Provide it for the key 'id'.
   - Requires authentication: Yes
   - Headers:
     - Key: Authorization
@@ -153,6 +135,7 @@ The following API endpoints are available:
 - **Delete Institution**: Delete an institution by its name.
   - Method: DELETE
   - URL: `http://localhost:8000/institutions/institution/delete_institution/?name=<institution_name>`
+  - `NOTE:` You can also provide the primary key or id of the institution alone instead of providing name. Provide it for the key 'id'.
   - Requires authentication: Yes
   - Headers:
     - Key: Authorization
@@ -197,9 +180,10 @@ The following API endpoints are available:
     ```
   - `Note:` The institution is automatically set based on the institution the user is an admin. If not an institution leve admin in any institution, the user can't create schools.
 
-- **Get School by Name**: Retrieve a school by its name.
+- **Get School**: Retrieve a school by its name.
   - Method: GET
   - URL: `http://localhost:8000/institutions/school/retrieve_school/?name=<school_name>&institution=<institution_name>`
+  -  `NOTE:` You can also provide the primary key or id of the school alone instead of providing name and institution. Provide it for the key 'id'.
   - Requires authentication: Yes
   - Headers:
     - Key: Authorization
@@ -243,56 +227,10 @@ The following API endpoints are available:
     ]
     ```
 
-**Get School by ID**: Retrieve a school by its ID.
-  - Method: GET
-  - URL: `http://localhost:8000/institutions/school/retrieve_school/?id=<school_id>&institution=<institution_name>`
-  - Requires authentication: Yes
-  - Headers:
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-  - Sample Response:
-    ```json
-    {
-        "id": <school_id>,
-        "name": "<school_name>",
-        "head": "<head_username>",
-        "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
-        "created_by": "<created_by_username>",
-        "institution": "<institution_name>"
-    }
-    ```
-  - **Response when no parameters provided:**
-    ```json
-    {
-        "error": "You must provide either the 'id' or 'name' parameter for the lookup."
-    }
-  - **Response when no institution provided: All schools with that nam are returned**
-    ```json
-    [
-        {
-            "id": <school_id_1>,
-            "name": "<school_name>",
-            "head": "<head_username>",
-            "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
-            "created_by": "<created_by_username>",
-            "institution": "<institution_name_1>"
-        },
-        {
-            "id": <school_id_2>,
-            "name": "<school_name>",
-            "head": "<head_username>",
-            "admins": ["<head_username>", "<school_admin1_username>", "<school_admin2_username>", "created_by_username"],
-            "created_by": "<created_by_username>",
-            "institution": "<institution_name_2>"
-        },
-        
-    ]
-    ```
-
-
 - **Update School**: Update a school by its name.
   - Method: PUT
   - URL: `http://localhost:8000/institutions/school/update_school/?name=<school_name>&institution=<institution_name>`
+  -  `NOTE:` You can also provide the primary key or id of the school alone instead of providing name and institution. Provide it for the key 'id'.
   - Requires authentication: Yes
   - Headers:
     - Key: Authorization
@@ -325,6 +263,7 @@ The following API endpoints are available:
 - **Delete School**: Delete a school by its name.
   - Method: DELETE
   - URL: `http://localhost:8000/institutions/school/delete_school/?name=<school_name>&institution=<institution_name>`
+  -  `NOTE:` You can also provide the primary key or id of the school alone instead of providing name and institution. Provide it for the key 'id'.
   - Requires authentication: Yes
   - Headers:
     - Key: Authorization
@@ -369,14 +308,16 @@ The following API endpoints are available:
     ```
   - Note: The 'school' field is automatically filled based on the institution the user is an admin of.
 
-- **Get Department by Name**: Retrieve a department by its name.
+- **Get Department**:
   - Method: GET
   - URL: `http://localhost:8000/institutions/department/retrieve_department/?name=<department_name>&institution=<institution_name>`
+  -  `NOTE:` You can also provide the primary key or id of the department alone instead of providing name and institution. Provide it for the key 'id'.
   - Requires authentication: Yes
 
-- **Update Department by Name**: Update a department by its name.
+- **Update Department**: 
   - Method: PUT
   - URL: `http://localhost:8000/institutions/department/update_department/?name=<department_name>&institution=<institution_name>`
+  -  `NOTE:` You can also provide the primary key or id of the department alone instead of providing name and institution. Provide it for the key 'id'.
   - Requires authentication: Yes
   - Headers:
     - Key: Authorization
@@ -409,9 +350,10 @@ The following API endpoints are available:
         "error": "You are not authorized to update this department. Only department-level admins can update."
     }
 
-- **Delete Department by Name**: Delete a department by its name.
+- **Delete Department**: Delete a department by its name.
   - Method: DELETE
   - URL: `http://localhost:8000/institutions/department/delete_department/?name=<department_name>&institution=<institution_name>`
+  -  `NOTE:` You can also provide the primary key or id of the department alone instead of providing name and institution. Provide it for the key 'id'.
   - Requires authentication: Yes
   - Headers:
     - Key: Authorization
@@ -422,6 +364,249 @@ The following API endpoints are available:
     {
         "error": "You are not authorized to DELETE this department. Only department-level admins can DELETE."
     }
+
+
+### Course
+
+- **Create Course**: Create a new course.
+  - Method: POST
+  - URL: `http://localhost:8000/institutions/course/`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Request Data Example:
+    ```json
+    {
+        "name": "Bachelor of Commerce"
+    }
+    ```
+  - Sample Response:
+    ```json
+    {
+        "id": 4,
+        "created_by": "<created_by_username>",
+        "department": "<user_department>",
+        "school": "Business",
+        "institution": "<user_institution>",
+        "name": "Bachelor of Commerce"
+    }
+    ```
+  - `Note:` The user in the request can only create courses for the department they are an admin in.
+
+- **Get Course**: Retrieve a course by its name.
+  - Method: GET
+  - URL: `http://localhost:8000/institutions/course/retrieve_course/?name=Bachelor of Commerce&institution=<user_institution>`
+  - `NOTE:` You can also provide the primary key or id of the course alone instead of providing name and institution. Provide it for the key 'id'.
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Sample Response:
+    ```json
+    [
+      {
+        "id": 4,
+        "created_by": "<created_by_username>",
+        "department": "<user_department>",
+        "school": "<user_school>",
+        "institution": "<user_institution>",
+        "name": "Bachelor of Commerce"
+    }
+    ]
+    ```
+  - **Response when no institution provided:**
+    ```json
+    [
+        {
+            "id": 4,
+            "created_by": "<created_by_username>",
+            "department": "<user_department>",
+            "school": "<user_school>",
+            "institution": "<user_institution>",
+            "name": "Bachelor of Commerce"
+        },
+        // ... Other courses with the same name in different institutions
+    ]
+    ```
+
+- **Update Course**: Update a course by its name.
+  - Method: PUT
+  - URL: `http://localhost:8000/institutions/course/update_course/?name=Bachelor of Commerce&institution=<user_institution>`
+  - `NOTE:` The name of the course and the institution are to be provided in the query parameters.
+  - `NOTE:` You can also provide the primary key or id of the course alone instead of providing name and institution. Provide it for the key 'id'.
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Sample Request Data:
+    ```json
+    {
+        "name": "Bachelor of Commerce Revised"
+    }
+    ```
+  - Sample Response: Updated course details.
+    ```json
+    [{
+        "id": 4,
+        "created_by": "<created_by_username>",
+        "department": "<user_department>",
+        "school": "<user_school>",
+        "institution": "<user_institution>",
+        "name": "Bachelor of Commerce Revised"
+    }]
+    ```
+  - **Response when not authorized:**
+    ```json
+    {
+        "error": "You are not authorized to update this course. Only department-level admins can update."
+    }
+    ```
+
+- **Delete Course**: Delete a course by its name.
+  - Method: DELETE
+  - URL: `http://localhost:8000/institutions/course/delete_course/?name=Bachelor of Commerce&institution=<user_institution>`
+  - `NOTE:` The name of the course and the institution are to be provided in the query parameters.
+  - `NOTE:` You can also provide the primary key or id of the course alone instead of providing name and institution. Provide it for the key 'id'.
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Sample Response: Message indicating successful deletion.
+  - **Response when not authorized:**
+    ```json
+    {
+        "error": "You are not authorized to DELETE this course. Only department-level admins can DELETE."
+    }
+    ```
+
+
+
+
+### Unit
+
+- **Create Unit**: Create a new unit.
+  - Method: POST
+  - URL: `http://localhost:8000/institutions/unit/`
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Request Data Example:
+    ```json
+    {
+        "name": "accounting",
+        "course": "Bachelor of Commerce"
+    }
+    ```
+  - Sample Response:
+    ```json
+    {
+        "id": 3,
+        "course": "Bachelor of Commerce",
+        "created_by": "<created_by_username>",
+        "department": "<user_department>",
+        "school": "<user_school>",
+        "institution": "<user_institution>",
+        "name": "accounting"
+    }
+    ```
+  - `Note:` The user in the request can only create units for courses offered by the department they are an admin in.
+
+- **Get Unit**: Retrieve a unit by its name, course, and institution.
+  - Method: GET
+  - URL: `http://localhost:8000/institutions/unit/retrieve_unit/?name=accounting&institution=<user_institution>&course=Bachelor of Commerce`
+  - `NOTE:` You can also provide the primary key or id of the unit alone instead of providing name, course, and institution. Provide it for the key 'id'.
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Sample Response:
+    ```json
+    [
+        {
+            "id": 3,
+            "course": "Bachelor of Commerce",
+            "created_by": "<created_by_username>",
+            "department": "<user_department>",
+            "school": "<user_school>",
+            "institution": "<user_institution>",
+            "name": "accounting"
+        }
+    ]
+    ```
+  - **Response when no institution and course provided:**
+    ```json
+    [
+        {
+            "id": 3,
+            "course": "Bachelor of Commerce",
+            "created_by": "<created_by_username>",
+            "department": "<user_department>",
+            "school": "<user_school>",
+            "institution": "<user_institution>",
+            "name": "accounting"
+        },
+        // ... Other units with the same name in different courses or institutions
+    ]
+    ```
+
+- **Update Unit**: Update a unit by its name, course, and institution.
+  - Method: PUT
+  - URL: `http://localhost:8000/institutions/unit/update_unit/?name=accounting&institution=<user_institution>&course=Bachelor of Commerce`
+  - `NOTE:` You can also provide the primary key or id of the unit alone instead of providing name, course, and institution. Provide it for the key 'id'.
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Sample Request Data:
+    ```json
+    {
+        "name": "accounting101"
+    }
+    ```
+  - Sample Response: Updated unit details.
+    ```json
+    [
+        {
+            "id": 3,
+            "course": "Bachelor of Commerce",
+            "created_by": "<created_by_username>",
+            "department": "<user_department>",
+            "school": "<user_school>",
+            "institution": "<user_institution>",
+            "name": "accounting101"
+        }
+    ]
+    ```
+  - **Response when not authorized:**
+    ```json
+    {
+        "error": "You are not authorized to update this unit. Only department-level admins can update."
+    }
+    ```
+
+- **Delete Unit**: Delete a unit by its name, course, and institution.
+  - Method: DELETE
+  - URL: `http://localhost:8000/institutions/unit/delete_unit/?name=accounting&institution=<user_institution>&course=Bachelor of Commerce`
+  - `NOTE:` You can also provide the primary key or id of the unit alone instead of providing name, course, and institution. Provide it for the key 'id'.
+  - Requires authentication: Yes
+  - Headers:
+    - Key: Authorization
+    - Value: Token `<your_auth_token>`
+  - Sample Response: Message indicating successful deletion.
+  - **Response when not authorized:**
+    ```json
+    {
+        "error": "You are not authorized to DELETE this unit. Only department-level admins can DELETE."
+    }
+    ```
+
+
+
+
+
+
 
 
 ## Clubs and Societies App
@@ -465,17 +650,19 @@ The following API endpoints are available:
     }
     ```
 
-- **Get Club/Society by Name**: Retrieve a club or society by its name.
+- **Get Club/Society**: 
   - Method: GET
   - URL: `http://localhost:8000/clubs_societies/clubsociety/retrieve_club/?name=<club_name>&institution=<institution_name>`
+  - `NOTE:` You can also provide the primary key or id of the clubsociety alone instead of providing name and institution. Provide it for the key 'id'.
   - Requires authentication: Yes
   - Headers:
     - Key: Authorization
     - Value: Token `<your_auth_token>`
 
-- **Update Club/Society by Name**: Update a club or society by its name.
+- **Update Club/Society**:
   - Method: PUT
   - URL: `http://localhost:8000/clubs_societies/clubsociety/update_club/?name=<club_name>&institution=<institution_name>`
+  - `NOTE:` You can also provide the primary key or id of the clubsociety alone instead of providing name and institution. Provide it for the key 'id'.
   - Requires authentication: Yes
   - Headers:
     - Key: Authorization
@@ -518,17 +705,24 @@ The following API endpoints are available:
     ```
 
 
-- **Delete Club/Society by Name**: Delete a club or society by its name.
+- **Delete Club/Society**: Delete a club or society by its name.
   - Method: DELETE
   - URL: `http://localhost:8000/clubs_societies/clubsociety/delete_club/?name=<club_name>&institution=<institution_name>`
+  - `NOTE:` You can also provide the primary key or id of the clubsociety alone instead of providing name and institution. Provide it for the key 'id'.
   - Requires authentication: Yes
   - Headers:
     - Key: Authorization
     - Value: Token `<your_auth_token>`
 
+
+
+
+
+
 ## Lecturers App
 ### Lecturer
-#### Create Lecturer
+
+**Create Lecturer**
 - Method: POST
 - URL: `http://localhost:8000/lecturers/lecturer/`
 - Requires authentication: Yes (Token should be provided in the header)
@@ -555,8 +749,7 @@ The following API endpoints are available:
             "instagram": "",
             "tiktok": "",
             "linkedin": "",
-            "youtube": "",
-            
+            "youtube": ""
         },
         "institution": "<institution_name>",
         "departments": [
@@ -565,7 +758,7 @@ The following API endpoints are available:
     }
     ```
 
-#### Get Lecturer by Username
+**Get Lecturer**
 - Method: GET
 - URL: `http://localhost:8000/lecturers/lecturer/retrieve_lecturer/?username=<username>`
 - Requires authentication: Yes (Token should be provided in the header)
@@ -594,7 +787,7 @@ The following API endpoints are available:
     }
     ```
 
-#### Update Lecturer
+**Update Lecturer**
 - Method: PUT
 - URL: `http://localhost:8000/lecturers/lecturer/update_lecturer/`
 - Requires authentication: Yes (Token should be provided in the header)
@@ -631,12 +824,12 @@ The following API endpoints are available:
     ```
 - `NOTE:` Only the user in the request can update their lecturer status.
 
-#### Delete Lecturer
+**Delete Lecturer**
 - Method: DELETE
 - URL: `http://localhost:8000/lecturers/lecturer/delete_lecturer/`
 - Requires authentication: Yes (Token should be provided in the header)
 - `NOTE:` Only the user in the request can delete their lecturer status. This does not delete the user, only their status as a lecturer.
-  
+
 
 
 

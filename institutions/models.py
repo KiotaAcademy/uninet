@@ -47,8 +47,8 @@ class Department(AdminsModelMixin, models.Model):
 # Model for a course offered by the department
 class Course(models.Model):
     name = models.CharField(max_length=200)
-
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name="courses")
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="created_courses", null=True)
 
     def __str__(self):
         return self.name
@@ -56,8 +56,8 @@ class Course(models.Model):
 # Model for units offered for a course
 class Unit(models.Model):
     name = models.CharField(max_length=200)
-
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="units")
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="created_units", null=True)
 
     def __str__(self):
         return self.name

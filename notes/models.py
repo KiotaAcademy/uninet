@@ -82,7 +82,7 @@ class Lecture(models.Model):
     topics = models.ManyToManyField(Topic, blank=True)
     students = models.ManyToManyField(User, related_name='lectures_attended', blank=True)
     lecturer_comments = models.TextField(blank=True)
-    
+    # uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='lectures_uploaded_by')
 
     class Meta:
         unique_together = ('name', 'lecturer')
