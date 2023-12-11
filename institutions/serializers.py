@@ -20,7 +20,6 @@ class UnitSerializer(ObjectLookupMixin, serializers.ModelSerializer):
         fields = '__all__'
     
     course = serializers.StringRelatedField(source='course.name', read_only=True)
-    # course = GenericRelatedField(queryset=Course.objects.none(), field="name", required=False)
     created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
     department = serializers.StringRelatedField(source='course.department.name', read_only=True)
     school = serializers.StringRelatedField(source='course.department.school.name', read_only=True)
