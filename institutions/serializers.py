@@ -8,6 +8,7 @@ from clubs_societies.models import ClubSociety
 
 from base.shared_across_apps.serializers import GenericRelatedField
 from base.shared_across_apps.mixins import AdminsSerializerMixin
+from base.shared_across_apps.mixins import ObjectLookupMixin
 
 from django.db.models import Prefetch
 from django.contrib.auth import get_user_model
@@ -73,7 +74,7 @@ class CourseSerializer(serializers.ModelSerializer):
         # If the user is not a department level admin, raise a validation error
         raise ValidationError("You are not a department level admin in any department. Only department level admins can create courses within a department.")
     
-class DepartmentSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
+class DepartmentSerializer(ObjectLookupMixin, AdminsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = Department
         fields = '__all__'
@@ -86,25 +87,43 @@ class DepartmentSerializer(AdminsSerializerMixin, serializers.ModelSerializer):
     school = serializers.StringRelatedField(source='school.name', read_only=True)
     institution = serializers.StringRelatedField(source='school.institution.name', read_only=True)
 
-    # Use the following line only if you intend to provide the school in the request.
+    # Use the following line only if you intend to provide the school in the request data.
     # The 'school' field is automatically filled based on the institution the user is an admin of.
     # school = GenericRelatedField(queryset=School.objects.all(), field="name", required=False)
 
     def create(self, validated_data):
+        user = self.context['request'].user
         default_admins = ['head', 'secretary', 'created_by']
         # Determine the school based on the user's admin role
-        user = self.context['request'].user
-        schools = School.objects.filter(admins=user)
+        provided_school = self.context['request'].query_params.get('school', None)
+        provided_institution = self.context['request'].query_params.get('institution', None)
+        if provided_school:
+            if not provided_institution:
+                raise ValidationError(f"Provide both 'institution' and 'school' in the query parameters.")
+            school = self.lookup_object(request=self.context['request'], 
+                                        queryset=School.objects.all(),
+                                        name_param='school',
+                                        filters={'institution__name': provided_institution})[0]
+            authorized = self.check_authorization(school, user)
+            if authorized:
+                validated_data['school'] = school
+            else:
+                raise ValidationError(f"You are not an admin in School of '{school.name}'. Only school admins can create departments.")
+        
+        else:
+            schools = School.objects.filter(admins=user)
 
-        if schools.exists():
-            school = schools.first()
-            validated_data['school'] = school
-            instance = super().create(validated_data)
-            return self.add_admins_to_instance(instance, validated_data, default_admins)
+            if schools.exists():
+                school = schools.first()
+                validated_data['school'] = school
+            else:
+                # If the user is not a school level admin, raise a validation error
+                raise ValidationError("You are not a school level admin in any school. Only school level admins can create departments within a school.")
+            
+        instance = super().create(validated_data)
+        return self.add_admins_to_instance(instance, validated_data, default_admins)
 
-        # If the user is not a school level admin, raise a validation error
-        raise ValidationError("You are not a school level admin in any school. Only school level admins can create departments within a school.")
-
+        
     def update(self, instance, validated_data):
         default_admin_fields = ['head', 'secretary'] # exclude created_by as its admin status should not be updated 
         instance = self.update_admins_for_instance(instance, validated_data, default_admin_fields)
