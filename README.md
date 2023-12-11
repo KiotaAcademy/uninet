@@ -355,12 +355,11 @@ The following API endpoints are available:
     ```
 
 
-
 ### Department
 
 #### Create Department
 - Method: POST
-- URL: `http://localhost:8000/institutions/department/`
+- URL: `http://localhost:8000/institutions/department/?school=<school_name>&institution=<institution_name>`
 - Requires authentication: Yes
 - Headers:
   - Key: Authorization
@@ -372,6 +371,9 @@ The following API endpoints are available:
         "admins": ["<department_admin1_username>"]
     }
     ```
+- Additional Query Parameters (Optional):
+  - `school`: Provide the school name to specify the school where the department should be created.
+  - `institution`: Provide the institution name along with the school name.
 - Sample Response:
     ```json
     {
@@ -386,7 +388,7 @@ The following API endpoints are available:
         "name": "<department_name>"
     }
     ```
-- Note: The 'school' field is automatically filled based on the institution the user is an admin of.
+- `Note`: The 'school' field is automatically filled based on the institution the user is an admin of. If the `school` parameter is provided, it will create the department in the specified school (if the user is authorized). Otherwise, it defaults to the first school where the user is a school level admin.
 
 #### Get Department
 - Method: GET
@@ -451,7 +453,7 @@ The following API endpoints are available:
 
 #### Create Course
 - Method: POST
-- URL: `http://localhost:8000/institutions/course/`
+- URL: `http://localhost:8000/institutions/course/?institution=<institution_name>&school=<school_name>&department=<department_name>`
 - Requires authentication: Yes
 - Headers:
   - Key: Authorization
@@ -462,6 +464,10 @@ The following API endpoints are available:
         "name": "Bachelor of Commerce"
     }
     ```
+- Additional Query Parameters (Optional):
+  - `department`: Provide the department name to specify the department where the course should be created.
+  - `school`: Provide the school name to specify the school where the department belongs.
+  - `institution`: Provide the institution name along with the school name.
 - Sample Response:
     ```json
     {
@@ -473,7 +479,7 @@ The following API endpoints are available:
         "name": "Bachelor of Commerce"
     }
     ```
-- `Note:` The user in the request can only create courses for the department they are an admin in.
+- `Note`: The user in the request can only create courses for the department they are an admin in. If the `department` parameter is provided, it will create the course in the specified department (if the user is authorized). Otherwise, it defaults to the first department where the user is a department level admin.
 
 #### Get Course
 - Method: GET
@@ -560,12 +566,12 @@ The following API endpoints are available:
         "error": "You are not authorized to DELETE this course. Only department-level admins can DELETE."
     }
     ```
-
 ### Unit
 
 #### Create Unit
 - Method: POST
-- URL: `http://localhost:8000/institutions/unit/`
+- URL: `http://localhost:8000/institutions/unit/?institution=<institution_name>&school=<school_name>&department=<department_name>&course=<course_name>`
+
 - Requires authentication: Yes
 - Headers:
   - Key: Authorization
@@ -573,10 +579,14 @@ The following API endpoints are available:
 - Request Data Example:
     ```json
     {
-        "name": "accounting",
-        "course": "Bachelor of Commerce"
+        "name": "accounting"
     }
     ```
+- Query Parameters (Must be provided):
+  - `course`: Provide the course name to specify the course where the unit should be created.
+  - `department`: Provide the department name to specify the department where the course belongs.
+  - `school`: Provide the school name to specify the school where the department belongs.
+  - `institution`: Provide the institution name along with the school name.
 - Sample Response:
     ```json
     {
@@ -589,7 +599,8 @@ The following API endpoints are available:
         "name": "accounting"
     }
     ```
-- `Note:` The user in the request can only create units for courses offered by the department they are an admin in.
+- `Note`: The user in the request can only create units for courses offered by the department they are an admin in. If the `course` parameter is provided, it will create the unit in the specified course (if the user is authorized). 
+
 
 #### Get Unit
 - Method: GET
