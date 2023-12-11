@@ -7,9 +7,9 @@ from rest_framework import status
 
 from .models import ClubSociety
 from .serializers import ClubSocietySerializer
-from base.shared_across_apps.mixins import ObjectViewMixin
+from base.shared_across_apps.mixins import ObjectLookupMixin
 
-class ClubSocietyViewSet(ObjectViewMixin, viewsets.ModelViewSet):
+class ClubSocietyViewSet(ObjectLookupMixin, viewsets.ModelViewSet):
     """
     A viewset for managing club and society profiles.
 

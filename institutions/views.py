@@ -10,9 +10,9 @@ from django.db.models import QuerySet
 
 from .models import Institution, School, Department, Course, Unit
 from .serializers import InstitutionSerializer, SchoolSerializer, DepartmentSerializer, CourseSerializer, UnitSerializer
-from base.shared_across_apps.mixins import ObjectViewMixin
+from base.shared_across_apps.mixins import ObjectLookupMixin
 
-class InstitutionViewSet(ObjectViewMixin, viewsets.ModelViewSet):
+class InstitutionViewSet(ObjectLookupMixin, viewsets.ModelViewSet):
     queryset = Institution.objects.all()
     serializer_class = InstitutionSerializer
 
@@ -54,7 +54,7 @@ class InstitutionViewSet(ObjectViewMixin, viewsets.ModelViewSet):
         return Response({'message': 'Institution deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 
-class SchoolViewSet(ObjectViewMixin, viewsets.ModelViewSet):
+class SchoolViewSet(ObjectLookupMixin, viewsets.ModelViewSet):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
 
@@ -104,7 +104,7 @@ class SchoolViewSet(ObjectViewMixin, viewsets.ModelViewSet):
         school.delete()
         return Response({'message': 'School deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
-class DepartmentViewSet(ObjectViewMixin, viewsets.ModelViewSet):
+class DepartmentViewSet(ObjectLookupMixin, viewsets.ModelViewSet):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
 
@@ -156,7 +156,7 @@ class DepartmentViewSet(ObjectViewMixin, viewsets.ModelViewSet):
         return Response({'message': 'Department deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 
-class CourseViewSet(ObjectViewMixin, viewsets.ModelViewSet):
+class CourseViewSet(ObjectLookupMixin, viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
 
@@ -209,7 +209,7 @@ class CourseViewSet(ObjectViewMixin, viewsets.ModelViewSet):
         return Response({'message': 'Course deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 
-class UnitViewSet(ObjectViewMixin, viewsets.ModelViewSet):
+class UnitViewSet(ObjectLookupMixin, viewsets.ModelViewSet):
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
 
