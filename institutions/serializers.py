@@ -14,44 +14,46 @@ from django.db.models import Prefetch
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-class UnitSerializer(serializers.ModelSerializer):
+class UnitSerializer(ObjectLookupMixin, serializers.ModelSerializer):
     class Meta:
         model = Unit
         fields = '__all__'
     
-    course = GenericRelatedField(queryset=Course.objects.none(), field="name", required=True)
+    course = serializers.StringRelatedField(source='course.name', read_only=True)
+    # course = GenericRelatedField(queryset=Course.objects.none(), field="name", required=False)
     created_by = serializers.StringRelatedField(source='created_by.username', read_only=True)
     department = serializers.StringRelatedField(source='course.department.name', read_only=True)
     school = serializers.StringRelatedField(source='course.department.school.name', read_only=True)
     institution = serializers.StringRelatedField(source='course.department.school.institution.name', read_only=True)
 
-    def get_course_queryset(self):
-        # Check if there is a request
-        request = self.context.get('request', None)
-        if not request or request.method=='GET':  # Can happen when the unit serializer is used within other serializers, e.g., institutions/serializers.py/DepartmentSerializer
-            return Course.objects.none()
-        
-        # If there is a request, check if the user is a department level admin
+    def create(self, validated_data):
+        request = self.context.get('request')
         user = request.user
-        departments = Department.objects.filter(admins=user)
+        provided_course = request.query_params.get('course', None)
+        provided_department = request.query_params.get('department', None)
+        provided_school = request.query_params.get('school', None)
+        provided_institution = request.query_params.get('institution', None)
+        
+        if not (provided_course and provided_department and provided_school and provided_institution):
+            raise ValidationError("Provide 'course', 'department', 'school', 'institution' in the query parameters.")
+            
+        course = self.lookup_object(request=self.context['request'],
+                                    queryset=Course.objects.all(),
+                                    name_param='course',
+                                    filters={'department__school__institution__name': provided_institution,
+                                             'department__school__name': provided_school,
+                                             'department__name': provided_department})[0]
+        
+        authorized = self.check_authorization(course.department, user)
+        if not authorized:
+            raise ValidationError(f"You are not an admin in Department of '{course.department.name}'. Only department admins can create units.")
 
-        if departments.exists():
-            department = departments.first()
-            q = Course.objects.filter(department=department)
-            return q
+        validated_data['course'] = course
+        instance = super().create(validated_data)
+        return instance
 
-        # If the user is not a department level admin, raise a validation error
-        raise ValidationError("You are not a department level admin in any department. Only department level admins can create, update or delete units within a department.")
 
-    def get_fields(self):
-        fields = super().get_fields()
-        q = self.get_course_queryset()
-        fields['course'] = GenericRelatedField(queryset=q, field="name", required=True)
-        return fields
-    
-    
-
-class CourseSerializer(serializers.ModelSerializer):
+class CourseSerializer(ObjectLookupMixin, serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
@@ -63,17 +65,38 @@ class CourseSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # logic to check if the user is a department level admin
         user = self.context['request'].user
-        departments = Department.objects.filter(admins=user)
+        provided_department = self.context['request'].query_params.get('department', None)
+        provided_school = self.context['request'].query_params.get('school', None)
+        provided_institution = self.context['request'].query_params.get('institution', None)
 
-        if departments.exists():
-            department = departments.first()
-            validated_data['department'] = department
-            instance = super().create(validated_data)
-            return instance
+        if provided_department:
+            if not (provided_school and provided_institution):
+                raise ValidationError("Provide 'school', 'institution', and 'department' in the query parameters.")
+            department = self.lookup_object(request=self.context['request'],
+                                           queryset=Department.objects.all(),
+                                           name_param='department',
+                                           filters={'school__institution__name': provided_institution,
+                                                    'school__name': provided_school})[0]
+            authorized = self.check_authorization(department, user)
+            if authorized:
+                validated_data['department'] = department
+            else:
+                raise ValidationError(f"You are not an admin in Department of '{department.name}'. Only department admins can create courses.")
+        
+        else:
+            departments = Department.objects.filter(admins=user)
 
-        # If the user is not a department level admin, raise a validation error
-        raise ValidationError("You are not a department level admin in any department. Only department level admins can create courses within a department.")
+            if departments.exists():
+                department = departments.first()
+                validated_data['department'] = department
+            else:
+                # If the user is not a department level admin, raise a validation error
+                raise ValidationError("You are not a department level admin in any department. Only department level admins can create courses within a department.")
+
+        instance = super().create(validated_data)
+        return instance
     
+
 class DepartmentSerializer(ObjectLookupMixin, AdminsSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = Department
