@@ -7,8 +7,8 @@ from rest_framework import status
 
 from django.http import Http404
 
-from .models import Lecturer
-from .serializers import LecturerSerializer
+from .models import Lecturer, Lecture
+from .serializers import LecturerSerializer, LectureSerializer
 
 
 
@@ -67,3 +67,20 @@ class LecturerViewSet(viewsets.ModelViewSet):
         
         lecturer.delete()
         return Response({"detail": "Lecturer deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+    
+class LectureViewSet(viewsets.ModelViewSet):
+    queryset = Lecture.objects.all()
+    serializer_class = LectureSerializer
+
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        # Check if a lecturer with the same user already exists
+        user = self.request.user
+        existing_lecturer = Lecturer.objects.filter(user=user).first()
+        
+        if not existing_lecturer:
+            return Response({"detail": "Only lecturers can create lectures."}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer.save(lecturer=existing_lecturer)
