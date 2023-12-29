@@ -1,6 +1,6 @@
 # Table of Contents
 - [Table of Contents](#table-of-contents)
-- [UjuziHub API Endpoints](#ujuzihub-api-endpoints)
+- [UniNet API Endpoints](#uninet-api-endpoints)
   - [Accounts App](#accounts-app)
     - [CustomUser](#customuser)
       - [User Registration](#user-registration)
@@ -70,15 +70,9 @@
       - [Get Topics by Name](#get-topics-by-name)
       - [Update Topic](#update-topic)
       - [Delete Topic](#delete-topic)
-    - [Lectures](#lectures)
-      - [Create Lecture](#create-lecture)
-      - [Get All Lectures](#get-all-lectures)
-      - [Get Lecture by ID](#get-lecture-by-id)
-      - [Update Lecture by ID](#update-lecture-by-id)
-      - [Update Lecture by Query Parameters](#update-lecture-by-query-parameters)
   - [Testing API endpoints](#testing-api-endpoints)
 
-# UjuziHub API Endpoints
+# UniNet API Endpoints
 
 The following API endpoints are available:
 ## Accounts App
@@ -1077,57 +1071,6 @@ The following API endpoints are available:
 - Note: Authentication details are required in the header.
     - Key: Authorization
     - Value: Token <your_auth_token>
-
-### Lectures
-
-#### Create Lecture
-- Method: POST
-- URL: `http://localhost:8000/notes/lectures/create_lecture/`
-- Request Data Example:
-    ```json
-    {
-        "lecturer": 3,
-        "name": "jazzcvdddfff",
-        "description": "symphony of the opera",
-        "students": [2, 3],
-        "topics": [1, 9]
-    }
-    ```
-- Note: Authentication details are required in the header.
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-
-#### Get All Lectures
-- Method: GET
-- URL: `http://localhost:8000/notes/lectures/`
-- Note: Authentication details are required in the header.
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-
-#### Get Lecture by ID
-- Method: GET
-- URL: `http://localhost:8000/notes/lectures/<lecture_id>/`
-- Note: Authentication details are required in the header.
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-
-#### Update Lecture by ID
-- Method: PUT
-- URL: `http://localhost:8000/notes/lectures/update_lecture/`
-- Request Data Example:
-    ```json
-    {
-        "id": 21,
-        "topics": [1, 9]
-    }
-    ```
-- Note: Authentication details are required in the header.
-    - Key: Authorization
-    - Value: Token <your_auth_token>
-
-#### Update Lecture by Query Parameters
-- Method: PUT
-- URL: `http://localhost:8000/
 
 
 
