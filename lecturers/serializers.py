@@ -10,6 +10,10 @@ from base.shared_across_apps.mixins import ObjectLookupMixin
 
 from institutions.models import Institution, Department, Unit
 
+from notes.models import Document
+
+from django.urls import reverse
+from django.db.utils import IntegrityError
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -24,7 +28,25 @@ class LectureSerializer(ObjectLookupMixin, serializers.ModelSerializer):
     department = serializers.StringRelatedField(source='unit.course.department.name', read_only=True)
     school = serializers.StringRelatedField(source='unit.course.department.school.name', read_only=True)
     institution = serializers.StringRelatedField(source='unit.course.department.school.institution.name', read_only=True)
+    documents = GenericRelatedField(queryset=Document.objects.all(), field="title", many=True)
 
+    def get_document_urls(self, instance):
+        document_urls = []
+        for document in instance.documents.all():
+            document_download_url_by_id = reverse('download-document-by-id', args=[document.pk])
+            document_download_url_by_title = reverse('download-document-by-title', args=[document.title])
+            document_urls.append({
+                'title': document.title,
+                'download_url_by_id': self.context['request'].build_absolute_uri(document_download_url_by_id),
+                'download_url_by_title': self.context['request'].build_absolute_uri(document_download_url_by_title),
+            })
+        return document_urls
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['document_urls'] = self.get_document_urls(instance)
+        return data
+    
     def create(self, validated_data):
         lecturer = validated_data['lecturer']
         request = self.context.get('request')
@@ -49,8 +71,24 @@ class LectureSerializer(ObjectLookupMixin, serializers.ModelSerializer):
 
         # Add the unit to the validated data before creating the Lecture instance
         validated_data['unit'] = unit
-        # Create the Lecture instance
-        lecture = super().create(validated_data)
+        try:
+            # Try to create the Lecture instance
+            lecture = super().create(validated_data)
+        except IntegrityError as e:
+            # Handle the case where the lecture already exists
+            existing_lecture = Lecture.objects.get(
+                lecturer=lecturer,
+                unit=unit,
+                title=validated_data['title'],
+                date=validated_data['date']
+            )
+            # If needed, you can update the existing lecture here
+            # existing_lecture.description = validated_data['description']
+            # existing_lecture.save()
+
+            # Return a meaningful error message or take other appropriate action
+            raise serializers.ValidationError("Lecture already exists.")
+
         return lecture
 
 class LecturerSerializer(serializers.ModelSerializer):

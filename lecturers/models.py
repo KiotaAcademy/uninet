@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from institutions.models import Institution, School, Department, Course, Unit
-
+from notes.models import Document
 User = get_user_model()
 
 class Lecturer(models.Model):
@@ -20,6 +20,11 @@ class Lecture(models.Model):
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
+    documents = models.ManyToManyField(Document, blank=True)
+    lecturer_comments = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = ['lecturer', 'unit', 'title', 'date']
 
     def __str__(self):
         return f"{self.title} - {self.date}"
