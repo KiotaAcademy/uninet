@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from .models import Category, Document, Topic, Lecture
+from .models import Category, Document, Topic
 
 User = get_user_model()
 
@@ -63,30 +63,4 @@ class TopicSerializer(serializers.ModelSerializer):
         document_download_url = reverse('download-document-by-id', args=[instance.document.pk])
         return self.context['request'].build_absolute_uri(document_download_url)
 
-    
-
-
-class LectureSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Lecture
-        fields = '__all__'
-     # Create a custom field for displaying topic data when retrieving lectures
-    topics_info = TopicSerializer(many=True, read_only=True, source='topics')
-
-    # Use SlugRelatedField for serialization (display student usernames)
-    students_usernames = serializers.SlugRelatedField(
-        many=True,
-        read_only=True,
-        slug_field='username',
-        source='students'
-    )
-    
-    
-    lecturer_username = serializers.SlugRelatedField(
-        many=False,
-        read_only=True,
-        slug_field='username',
-        source='lecturer'
-    )
     

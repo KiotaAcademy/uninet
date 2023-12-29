@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Document, Topic, Lecture
+from .models import Category, Document, Topic
 
 # Register your models here.
-admin.site.register([Category, Document, Topic, Lecture])
+admin.site.register([Category, Document, Topic])

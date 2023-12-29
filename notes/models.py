@@ -72,20 +72,4 @@ class Topic(models.Model):
     def __str__(self):
         return self.name
 
-class Lecture(models.Model):
-    """
-    Model representing various lectures that have taken place.
-    """
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
-    lecturer = models.ForeignKey(User, on_delete=models.CASCADE)
-    topics = models.ManyToManyField(Topic, blank=True)
-    students = models.ManyToManyField(User, related_name='lectures_attended', blank=True)
-    lecturer_comments = models.TextField(blank=True)
-    # uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='lectures_uploaded_by')
 
-    class Meta:
-        unique_together = ('name', 'lecturer')
-        
-    def __str__(self):
-        return f"Lecture: {self.name} - {self.lecturer}"

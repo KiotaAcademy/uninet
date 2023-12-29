@@ -7,8 +7,8 @@ from django.urls import reverse
 from .models import Student
 from .serializers import StudentSerializer
 
-from notes.models import Document, Lecture 
-from notes.serializers import DocumentSerializer, CategorySerializer, LectureSerializer
+from notes.models import Document 
+from notes.serializers import DocumentSerializer, CategorySerializer
 
 class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
@@ -39,12 +39,4 @@ class StudentViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['GET'])
     def attended_lectures(self, request, pk=None):
-        student_profile = self.get_object()
-        
-        # Filter attended lectures based on the student's user instance
-        attended_lectures = Lecture.objects.filter(students=student_profile.user)
-
-        # Create a list of attended lectures data including the download URLs
-        lecture_data = LectureSerializer(attended_lectures, many=True, context={'request': request}).data
-
-        return Response(lecture_data)
+        pass

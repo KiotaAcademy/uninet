@@ -160,10 +160,13 @@ class ObjectLookupMixin:
             else:
                 for key, value in filters.items():
                     if value:
-                        filter_conditions &= Q(**{f"{key}__iexact": value})
+                        if isinstance(value, models.Model):
+                            filter_conditions &= Q(**{f"{key}__exact": value})
+                        else:
+                            filter_conditions &= Q(**{f"{key}__iexact": value})
                 objs = queryset.filter(filter_conditions)
             if objs.count() == 0:
-                raise ValidationError(f"No object found with name '{name_param_value}'")
+                raise ValidationError(f"No {name_param} found with name '{name_param_value}'")
 
         else:
             raise ValidationError("You must provide either the 'id' or 'name' parameter for the lookup.")
