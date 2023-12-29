@@ -48,6 +48,12 @@
       - [Get Lecturer](#get-lecturer)
       - [Update Lecturer](#update-lecturer)
       - [Delete Lecturer](#delete-lecturer)
+    - [Lecture](#lecture)
+      - [Create Lecture](#create-lecture)
+      - [Get All Lectures](#get-all-lectures)
+      - [Get Lecture](#get-lecture)
+      - [Update Lecture](#update-lecture)
+      - [Delete Lecture](#delete-lecture)
   - [Notes App](#notes-app)
     - [Categories](#categories)
       - [Create Categories in Bulk](#create-categories-in-bulk)
@@ -911,7 +917,108 @@ The following API endpoints are available:
 - Requires authentication: Yes (Token should be provided in the header)
 - `NOTE:` Only the user in the request can delete their lecturer status. This does not delete the user, only their status as a lecturer.
 
+### Lecture
+#### Create Lecture
+- Method: POST
+- URL: `http://localhost:8000/lecturers/lecture/?department=<department_name>&unit=<unit_name>`
+- Requires authentication: Yes (Token should be provided in the header)
+- Request Data Example:
+    ```json
+    {
+        "name": "<lecture_name>",
+        "description": "<lecture_description>",
+        "date": "2023-12-15",
+        "start_time": "09:00:00",
+        "end_time": "11:00:00",
+        "documents": ["<document_title>"]
+    }
+    ```
+- Sample Response: The response data contains information about the created lecture along with document download URLs.
+    ```json
+    {
+        "id": <lecture_id>,
+        "lecturer": "<lecturer_username>",
+        "unit": "<unit_name>",
+        "course": "<course_name>",
+        "department": "<department_name>",
+        "school": "<school_name>",
+        "institution": "<institution_name>",
+        "documents": [
+            "<document_title>"
+        ],
+        "name": "<lecture_name>",
+        "description": "<lecture_description>",
+        "date": "2023-12-15",
+        "start_time": "09:00:00",
+        "end_time": "11:00:00",
+        "lecturer_comments": "",
+        "document_urls": [
+            {
+                "title": "<document_title>",
+                "download_url_by_id": "http://localhost:8000/notes/documents/<document_id>/download_document_by_id/",
+                "download_url_by_title": "http://localhost:8000/notes/documents/<document_title>/download_document_by_title/"
+            }
+        ]
+    }
+    ```
+- `NOTE:` Authentication details are required.
+#### Get All Lectures
+- Method: GET
+- URL: `http://localhost:8000/lecturers/lecture/`
+- Requires authentication: Yes (Token should be provided in the header)
 
+#### Get Lecture
+- Method: GET
+- URL: `http://localhost:8000/lecturers/lecture/retrieve_lecture/?name=<lecture_name>&unit=<unit_name>&department=<department_name>&date=<lecture_date>`
+- Requires authentication: Yes (Token should be provided in the header)
+- Sample Response:
+    ```json
+    {
+        "id": <lecture_id>,
+        "lecturer": "<lecturer_username>",
+        "unit": "<unit_name>",
+        "course": "<course_name>",
+        "department": "<department_name>",
+        "school": "<school_name>",
+        "institution": "<institution_name>",
+        "documents": [
+            "<document_title>"
+        ],
+        "name": "<lecture_name>",
+        "description": "<lecture_description>",
+        "date": "2023-12-15",
+        "start_time": "09:00:00",
+        "end_time": "11:00:00",
+        "lecturer_comments": "",
+        "document_urls": [
+            {
+                "title": "<document_title>",
+                "download_url_by_id": "http://localhost:8000/notes/documents/<document_id>/download_document_by_id/",
+                "download_url_by_title": "http://localhost:8000/notes/documents/<document_title>/download_document_by_title/"
+            }
+        ]
+    }
+    ```
+- `NOTE:` Authentication details are required.
+
+#### Update Lecture
+- Method: PUT
+- URL: `http://localhost:8000/lecturers/lecture/update_lecture/?name=<lecture_name>&unit=<unit_name>&department=<department_name>&date=<lecture_date>`
+- Requires authentication: Yes (Token should be provided in the header)
+- Request Data Example:
+    ```json
+    {
+        "description": "<new_lecture_description>",
+        "remove_documents": ["<document_title>"]
+    }
+    ```
+- `NOTE:` Authentication details are required.
+
+#### Delete Lecture
+- Method: DELETE
+- URL: `http://localhost:8000/lecturers/lecture/delete_lecture/?name=<lecture_name>&unit=<unit_name>&department=<department_name>&date=<lecture_date>`
+- Requires authentication: Yes (Token should be provided in the header)
+- `NOTE:` Only the lecturer associated with the lecture can delete it.
 
 
 
