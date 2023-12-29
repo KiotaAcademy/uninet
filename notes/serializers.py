@@ -64,29 +64,3 @@ class TopicSerializer(serializers.ModelSerializer):
         return self.context['request'].build_absolute_uri(document_download_url)
 
     
-
-
-class LectureSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Lecture
-        fields = '__all__'
-     # Create a custom field for displaying topic data when retrieving lectures
-    topics_info = TopicSerializer(many=True, read_only=True, source='topics')
-
-    # Use SlugRelatedField for serialization (display student usernames)
-    students_usernames = serializers.SlugRelatedField(
-        many=True,
-        read_only=True,
-        slug_field='username',
-        source='students'
-    )
-    
-    
-    lecturer_username = serializers.SlugRelatedField(
-        many=False,
-        read_only=True,
-        slug_field='username',
-        source='lecturer'
-    )
-    
