@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
-from .models import Category, Document, Topic, Lecture
+from .models import Category, Document, Topic
 
 User = get_user_model()
 

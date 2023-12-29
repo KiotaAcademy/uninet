@@ -15,8 +15,8 @@ from django.urls import reverse
 from django.conf import settings
 
 
-from .models import Category, Document, Topic, Lecture
-from .serializers import CategorySerializer, DocumentSerializer, TopicSerializer, LectureSerializer
+from .models import Category, Document, Topic
+from .serializers import CategorySerializer, DocumentSerializer, TopicSerializer
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
