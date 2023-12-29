@@ -10,7 +10,7 @@ from django.http import Http404
 from .models import Lecturer, Lecture
 from .serializers import LecturerSerializer, LectureSerializer
 
-
+from base.shared_across_apps.mixins import ObjectLookupMixin
 
 class LecturerViewSet(viewsets.ModelViewSet):
     queryset = Lecturer.objects.all()
@@ -68,7 +68,7 @@ class LecturerViewSet(viewsets.ModelViewSet):
         lecturer.delete()
         return Response({"detail": "Lecturer deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
     
-class LectureViewSet(viewsets.ModelViewSet):
+class LectureViewSet(ObjectLookupMixin, viewsets.ModelViewSet):
     queryset = Lecture.objects.all()
     serializer_class = LectureSerializer
 
@@ -84,3 +84,35 @@ class LectureViewSet(viewsets.ModelViewSet):
             return Response({"detail": "Only lecturers can create lectures."}, status=status.HTTP_403_FORBIDDEN)
 
         serializer.save(lecturer=existing_lecturer)
+    
+    @action(detail=False, methods=['GET'])
+    def retrieve_lecture(self, request):
+        # Extract query parameters
+        name = request.query_params.get('name', None)
+        unit_name = request.query_params.get('unit', None)
+        department_name = request.query_params.get('department', None)
+        date = request.query_params.get('date', None)
+
+        # Look up the lecture based on the provided parameters
+        lectures = self.lookup_object(
+            request,
+            self.queryset,
+            filters={
+                'name': name,
+                'unit__name': unit_name,
+                'unit__course__department__name': department_name,
+                'date': date
+            }
+        )
+
+        serializer = self.get_serializer(lectures, many=True)
+
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['PUT'])
+    def update_lecture(self, request):
+        pass
+
+    @action(detail=False, methods=['DELETE'])
+    def delete_lecture(self, request):
+        pass

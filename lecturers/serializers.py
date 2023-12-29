@@ -79,7 +79,7 @@ class LectureSerializer(ObjectLookupMixin, serializers.ModelSerializer):
             existing_lecture = Lecture.objects.get(
                 lecturer=lecturer,
                 unit=unit,
-                title=validated_data['title'],
+                name=validated_data['name'],
                 date=validated_data['date']
             )
             # If needed, you can update the existing lecture here
