@@ -29,7 +29,25 @@ class LectureSerializer(ObjectLookupMixin, serializers.ModelSerializer):
     school = serializers.StringRelatedField(source='unit.course.department.school.name', read_only=True)
     institution = serializers.StringRelatedField(source='unit.course.department.school.institution.name', read_only=True)
     documents = GenericRelatedField(queryset=Document.objects.all(), field="title", many=True)
+    remove_documents = GenericRelatedField(queryset=Document.objects.none(), field="title", many=True, required=False)
+    
+    def get_remove_documents_queryset(self, instance):
+        # Return the queryset of documents associated with the current lecture (instance)
+        return instance.documents.all()
 
+    def get_fields(self):
+        fields = super().get_fields()
+        if self.context['request'].method == 'PUT':
+            fields['remove_documents'] = GenericRelatedField(
+                queryset=self.get_remove_documents_queryset(self.instance),
+                field="title",
+                many=True,
+                required=False
+            )
+        return fields
+        return fields
+
+    
     def get_document_urls(self, instance):
         document_urls = []
         for document in instance.documents.all():
@@ -90,6 +108,19 @@ class LectureSerializer(ObjectLookupMixin, serializers.ModelSerializer):
             raise serializers.ValidationError("Lecture already exists.")
 
         return lecture
+    
+    def update(self, instance, validated_data):
+        # Handle addition of documents
+        new_documents = set(validated_data.pop('documents', []))
+        instance.documents.add(*new_documents)
+
+        # Handle removal of documents
+        remove_documents = set(validated_data.pop('remove_documents', []))
+        instance.documents.remove(*remove_documents)
+
+        instance.save()
+
+        return instance
 
 class LecturerSerializer(serializers.ModelSerializer):
     """

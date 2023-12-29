@@ -95,8 +95,8 @@ class LectureViewSet(ObjectLookupMixin, viewsets.ModelViewSet):
 
         # Look up the lecture based on the provided parameters
         lectures = self.lookup_object(
-            request,
-            self.queryset,
+            request=request,
+            queryset=self.queryset,
             filters={
                 'name': name,
                 'unit__name': unit_name,
@@ -111,8 +111,70 @@ class LectureViewSet(ObjectLookupMixin, viewsets.ModelViewSet):
 
     @action(detail=False, methods=['PUT'])
     def update_lecture(self, request):
-        pass
+        # Check if the user is a lecturer
+        lecturer = Lecturer.objects.filter(user=request.user).first()
+        if not lecturer:
+            return Response({"detail": "Only lecturers can update lectures."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Extract query parameters
+        name = request.data.get('name', None)
+        unit_name = request.data.get('unit', None)
+        department_name = request.data.get('department', None)
+        date = request.data.get('date', None)
+
+        # Look up the lecture based on the provided parameters and lecturer
+        lectures = self.lookup_object(
+            request=request,
+            queryset=self.queryset.filter(lecturer=lecturer),
+            filters={
+                'name': name,
+                'unit__name': unit_name,
+                'unit__course__department__name': department_name,
+                'date': date
+            }
+        )
+
+        # Ensure there is only one lecture matching the criteria
+        if len(lectures) != 1:
+            return Response({"detail": "Invalid or multiple lectures match the criteria."}, status=status.HTTP_400_BAD_REQUEST)
+
+        lecture = lectures[0]
+        serializer = self.get_serializer(lecture, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data)
 
     @action(detail=False, methods=['DELETE'])
     def delete_lecture(self, request):
-        pass
+        # Check if the user is a lecturer
+        lecturer = Lecturer.objects.filter(user=request.user).first()
+        if not lecturer:
+            return Response({"detail": "Only lecturers can delete lectures."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Extract query parameters
+        name = request.data.get('name', None)
+        unit_name = request.data.get('unit', None)
+        department_name = request.data.get('department', None)
+        date = request.data.get('date', None)
+
+        # Look up the lecture based on the provided parameters and lecturer
+        lectures = self.lookup_object(
+            request=request,
+            queryset=self.queryset.filter(lecturer=lecturer),
+            filters={
+                'name': name,
+                'unit__name': unit_name,
+                'unit__course__department__name': department_name,
+                'date': date
+            }
+        )
+
+        # Ensure there is only one lecture matching the criteria
+        if len(lectures) != 1:
+            return Response({"detail": "Invalid or multiple lectures match the criteria."}, status=status.HTTP_400_BAD_REQUEST)
+
+        lecture = lectures[0]
+        lecture.delete()
+
+        return Response({"detail": "Lecture deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
