@@ -54,6 +54,12 @@
       - [Get Lecture](#get-lecture)
       - [Update Lecture](#update-lecture)
       - [Delete Lecture](#delete-lecture)
+  - [Students App](#students-app)
+    - [Student](#student)
+      - [Create Student](#create-student)
+      - [Get Student](#get-student)
+      - [Update Student](#update-student)
+      - [Delete Student](#delete-student)
   - [Notes App](#notes-app)
     - [Categories](#categories)
       - [Create Categories in Bulk](#create-categories-in-bulk)
@@ -1019,6 +1025,126 @@ The following API endpoints are available:
 - URL: `http://localhost:8000/lecturers/lecture/delete_lecture/?name=<lecture_name>&unit=<unit_name>&department=<department_name>&date=<lecture_date>`
 - Requires authentication: Yes (Token should be provided in the header)
 - `NOTE:` Only the lecturer associated with the lecture can delete it.
+
+
+
+
+
+
+
+
+
+
+
+## Students App
+### Student
+#### Create Student
+- Method: POST
+- URL: `http://localhost:8000/students/student/`
+- Requires authentication: Yes (Token should be provided in the header)
+- Request Data Example:
+    ```json
+    {
+        "institution": "<institution_name>",
+        "course": "<course_name>"
+    }
+    ```
+- Sample Response: The response data contains student status information along with profile information of the user. 
+    ```json
+    {
+        "id": <student_id>,
+        "user": "<username>",
+        "profile": {
+            "avatar": null,
+            "bio": "bio for <username>",
+            "location": "",
+            "contact_number": "",
+            "website": "",
+            "facebook": "",
+            "twitter": "",
+            "instagram": "",
+            "tiktok": "",
+            "linkedin": "",
+            "youtube": ""
+        },
+        "institution": "<institution_name>",
+        "course": "<course_name>"
+    }
+    ```
+
+#### Get Student
+- Method: GET
+- URL: `http://localhost:8000/students/student/retrieve_student/?username=<username>`
+- Requires authentication: Yes (Token should be provided in the header)
+- Sample Response:
+    ```json
+    {
+        "id": <student_id>,
+        "user": "<username>",
+        "profile": {
+            "avatar": null,
+            "bio": "bio for <username>",
+            "location": "",
+            "contact_number": "",
+            "website": "",
+            "facebook": "",
+            "twitter": "",
+            "instagram": "",
+            "tiktok": "",
+            "linkedin": "",
+            "youtube": ""
+        },
+        "institution": "<institution_name>",
+        "course": "<course_name>"
+    }
+    ```
+#### Update Student
+- Method: PUT
+- URL: `http://localhost:8000/students/student/update_student/`
+- Requires authentication: Yes (Token should be provided in the header)
+- Request Data Example:
+    ```json
+    {
+        "course": "<new_course_name>"
+    }
+    ```
+- Sample Response: The response data contains student status information along with profile information of the user.
+    ```json
+    {
+        "id": <student_id>,
+        "user": "<username>",
+        "profile": {
+            "avatar": null,
+            "bio": "bio for <username>",
+            "location": "",
+            "contact_number": "",
+            "website": "",
+            "facebook": "",
+            "twitter": "",
+            "instagram": "",
+            "tiktok": "",
+            "linkedin": "",
+            "youtube": ""
+        },
+        "institution": "<institution_name>",
+        "course": "<new_course_name>"
+    }
+    ```
+- `NOTE:` Only the user in the request can update their student status.
+
+#### Delete Student
+- Method: DELETE
+- URL: `http://localhost:8000/students/student/delete_student/`
+- Requires authentication: Yes (Token should be provided in the header)
+- `NOTE:` Only the user in the request can delete their student status. This does not delete the user, only their status as a student.
+
+
+
+
+
+
+
+
 
 
 
